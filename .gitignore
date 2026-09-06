@@ -1,0 +1,10 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.env.local
+node_modules/
+*.zip
+.ruff_cache/
+.phpunit.result.cache
