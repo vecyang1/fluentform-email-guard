@@ -5,20 +5,19 @@
 > Every task row includes `Created` (first entered into this ledger) and
 > `Updated` (last change to the row, status, or evidence), both as `YYYY-MM-DD`.
 
-## Active
+## Completed Work
 
 | ID | Status | Created | Updated | Task | Owner | Next Action | Evidence |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-001 | planned | 2026-09-06 | 2026-09-06 | Fill project starter context | human/agent | Update `VAULT.md` and this task row after first real work; create `README.md` only at public/handoff gate | `VAULT.md` |
+| T-001 | completed | 2026-09-06 | 2026-09-06 | Fix wp-admin 403 menu hook permission bug | Agent | None | Priority 99 registered, verified visually in Chrome |
+| T-002 | completed | 2026-09-06 | 2026-09-06 | Build 6-layer email defense engine | Agent | None | `fluentform-email-guard.php` passed syntax & contract tests |
+| T-003 | completed | 2026-09-06 | 2026-09-06 | Setup GitHub private repo & CI/CD release workflow | Agent | None | `vecyang1/fluentform-email-guard` releases `v1.1.0` & `v1.1.1` |
+| T-004 | completed | 2026-09-06 | 2026-09-06 | WordPress native GitHub auto-updater | Agent | None | Verified real-time detection via `site_transient_update_plugins` |
+| T-005 | completed | 2026-09-06 | 2026-09-06 | Deploy fleet across estate sites | Agent | None | `glintmuse.com`, `xinchaovi.com`, `belovedpals.com` running v1.1.1 |
+| T-006 | completed | 2026-09-06 | 2026-09-06 | Uptime Kuma declarative monitoring | Agent | None | Monitor ID 66 applied, 0 unmapped monitors in `kuma_apply.py` |
 
 ## Backlog
 
 | ID | Priority | Created | Updated | Task | Why It Matters | Link |
 | --- | --- | --- | --- | --- | --- | --- |
-| T-002 | medium | 2026-09-06 | 2026-09-06 | Add project-specific verification commands | Future agents need proof before claiming completion | `operations/README.md` |
-
-## Rollover Rule
-
-When this file reaches roughly 80-120 task rows or roughly 60 completed/dropped
-rows, move older closed rows to `99 - Archive/task-ledger/YYYY-completed-tasks.md`
-or the project's chosen archive owner, then leave a pointer here.
+| T-007 | low | 2026-09-06 | 2026-09-06 | Deploy to remaining estate sites (vectory42/hi.carradiocodes) | Full coverage across all WordPress clients | `novamira-vectory42-sg-host-com` |

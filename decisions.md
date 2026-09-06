@@ -8,3 +8,7 @@ Keep execution proof in `progress.md` or `vault/sessions/`.
 | ID | Date | Decision | Status | Rationale | Evidence | Supersedes |
 | --- | --- | --- | --- | --- | --- | --- |
 | D-001 | 2026-09-06 | Use V.A.U.L.T. owner-doc structure for project continuity | accepted | Future agents need one owner per truth type | `VAULT.md`, `FILE_MAP_INDEX.md` | - |
+| D-002 | 2026-09-06 | Hook `admin_menu` at priority 99 | accepted | Fluent Forms registers `fluent_forms` at default priority 10; priority 99 prevents 403 hook mismatch | Chrome DevTools visual check & `admin_menu` test | - |
+| D-003 | 2026-09-06 | Uploads-based disposable domain cache with O(1) flip index | accepted | 8,700+ domains exceed option size limits; local JSON file with array_flip is sub-millisecond | `gm_ff_email_guard_sync_disposable_list()` | - |
+| D-004 | 2026-09-06 | Dual transient hook for GitHub Releases auto-updater | accepted | Hooking both read & write transient hooks ensures instantaneous update notifications in wp-admin | Verified across `glintmuse.com` and `xinchaovi.com` | - |
+| D-005 | 2026-09-06 | Declarative Uptime Kuma keyword monitoring | accepted | Keyword check on `"enabled":true` catches fatal errors that still return HTTP 200 | Monitor ID 66 in `kuma_apply.py` | - |
