@@ -15,6 +15,9 @@
 | T-004 | completed | 2026-09-06 | 2026-09-06 | WordPress native GitHub auto-updater | Agent | None | Verified real-time detection via `site_transient_update_plugins` |
 | T-005 | completed | 2026-09-06 | 2026-09-06 | Deploy fleet across estate sites | Agent | None | `glintmuse.com`, `xinchaovi.com`, `belovedpals.com` running v1.1.1 |
 | T-006 | completed | 2026-09-06 | 2026-09-06 | Uptime Kuma declarative monitoring | Agent | None | Monitor ID 66 applied, 0 unmapped monitors in `kuma_apply.py` |
+| T-008 | completed | 2026-09-06 | 2026-09-06 | Deploy to vectory44.sg-host.com (Yua Dear Studio) | Agent | None | Active, 8727 domains, 3 negative & 1 positive browser E2E tests verified |
+| T-009 | completed | 2026-09-06 | 2026-09-06 | Least-privilege FG-PAT token rotation & zero blast radius verification | Agent | None | Fine-Grained Token active across glintmuse, xinchaovi, belovedpals, worldinspirelab; old broad tokens purged; 0 access to other repos confirmed |
+
 
 ## Backlog
 
