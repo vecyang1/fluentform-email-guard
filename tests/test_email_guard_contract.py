@@ -27,7 +27,7 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
     def test_plugin_headers(self):
         headers = [
             "Plugin Name: Fluent Forms Email Guard & Anti-Bounce",
-            "Version: 1.1.0",
+            "Version: 1.1.1",
             "License: GPL-2.0-or-later",
             "Text Domain: fluentform-email-guard",
         ]

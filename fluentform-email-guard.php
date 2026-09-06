@@ -3,7 +3,7 @@
  * Plugin Name: Fluent Forms Email Guard & Anti-Bounce
  * Plugin URI: https://github.com/vecyang1/fluentform-email-guard
  * Description: Production-grade multi-layer real-time email defense for Fluent Forms. Blocks disposable/temporary domains (8,700+ domains), verifies live DNS MX records with 24h caching, auto-suggests typo corrections (e.g. gamil.com -> gmail.com), and prevents hard bounces in FluentCRM funnels. Includes GitHub Releases auto-updater.
- * Version: 1.1.0
+ * Version: 1.1.1
  * Author: GlintMuse Engineering & Vec
  * Author URI: https://glintmuse.com/
  * License: GPL-2.0-or-later
@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('GM_FF_EMAIL_GUARD_VERSION', '1.1.0');
+define('GM_FF_EMAIL_GUARD_VERSION', '1.1.1');
 define('GM_FF_EMAIL_GUARD_FILE', __FILE__);
 define('GM_FF_EMAIL_GUARD_BASENAME', plugin_basename(__FILE__));
 define('GM_FF_EMAIL_GUARD_PATH', plugin_dir_path(__FILE__));
@@ -736,40 +736,45 @@ function gm_ff_email_guard_render_admin_page() {
 add_action('rest_api_init', function () {
     $namespaces = ['fluentform-email-guard/v1', 'glintmuse/v1'];
 
-    foreach ($namespaces as $ns) {
-        register_rest_route($ns, '/email-guard/test', [
-            'methods' => 'POST',
-            'permission_callback' => '__return_true',
-            'callback' => function (\WP_REST_Request $request) {
-                $email = sanitize_text_field($request->get_param('email'));
-                $form_id = (int)$request->get_param('form_id');
-                if (!$email) {
-                    return new \WP_Error('missing_email', 'Please provide an email to test', ['status' => 400]);
-                }
-                $result = gm_ff_email_guard_check($email, $form_id);
-                return rest_ensure_response($result);
+    $test_handler = [
+        'methods' => 'POST',
+        'permission_callback' => '__return_true',
+        'callback' => function (\WP_REST_Request $request) {
+            $email = sanitize_text_field($request->get_param('email'));
+            $form_id = (int)$request->get_param('form_id');
+            if (!$email) {
+                return new \WP_Error('missing_email', 'Please provide an email to test', ['status' => 400]);
             }
-        ]);
+            $result = gm_ff_email_guard_check($email, $form_id);
+            return rest_ensure_response($result);
+        }
+    ];
 
-        register_rest_route($ns, '/email-guard/status', [
-            'methods' => 'GET',
-            'permission_callback' => '__return_true',
-            'callback' => function () {
-                $config = gm_ff_email_guard_get_config();
-                $logs = get_option('fluentform_email_guard_logs', []);
-                $disposable_map = gm_ff_email_guard_get_disposable_domains();
-                return rest_ensure_response([
-                    'enabled' => $config['enabled'],
-                    'version' => GM_FF_EMAIL_GUARD_VERSION,
-                    'disposable_domains_count' => count($disposable_map),
-                    'blocked_domains' => $config['blocked_domains'],
-                    'target_forms' => $config['target_forms'],
-                    'checks' => $config['checks'],
-                    'recent_blocked_logs' => array_slice((array)$logs, 0, 10),
-                    'total_recent_blocks' => count((array)$logs)
-                ]);
-            }
-        ]);
+    $status_handler = [
+        'methods' => 'GET',
+        'permission_callback' => '__return_true',
+        'callback' => function () {
+            $config = gm_ff_email_guard_get_config();
+            $logs = get_option('fluentform_email_guard_logs', []);
+            $disposable_map = gm_ff_email_guard_get_disposable_domains();
+            return rest_ensure_response([
+                'enabled' => $config['enabled'],
+                'version' => GM_FF_EMAIL_GUARD_VERSION,
+                'disposable_domains_count' => count($disposable_map),
+                'blocked_domains' => $config['blocked_domains'],
+                'target_forms' => $config['target_forms'],
+                'checks' => $config['checks'],
+                'recent_blocked_logs' => array_slice((array)$logs, 0, 10),
+                'total_recent_blocks' => count((array)$logs)
+            ]);
+        }
+    ];
+
+    foreach ($namespaces as $ns) {
+        register_rest_route($ns, '/test', $test_handler);
+        register_rest_route($ns, '/email-guard/test', $test_handler);
+        register_rest_route($ns, '/status', $status_handler);
+        register_rest_route($ns, '/email-guard/status', $status_handler);
     }
 });
 
