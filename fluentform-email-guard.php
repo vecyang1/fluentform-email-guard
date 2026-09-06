@@ -3,7 +3,7 @@
  * Plugin Name: Fluent Forms Email Guard & Anti-Bounce
  * Plugin URI: https://github.com/vecyang1/fluentform-email-guard
  * Description: Production-grade multi-layer real-time email defense for Fluent Forms. Blocks disposable/temporary domains (8,700+ domains), verifies live DNS MX records with 24h caching, auto-suggests typo corrections (e.g. gamil.com -> gmail.com), and prevents hard bounces in FluentCRM funnels. Includes GitHub Releases auto-updater.
- * Version: 1.1.1
+ * Version: 1.1.2
  * Author: GlintMuse Engineering & Vec
  * Author URI: https://glintmuse.com/
  * License: GPL-2.0-or-later
@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('GM_FF_EMAIL_GUARD_VERSION', '1.1.1');
+define('GM_FF_EMAIL_GUARD_VERSION', '1.1.2');
 define('GM_FF_EMAIL_GUARD_FILE', __FILE__);
 define('GM_FF_EMAIL_GUARD_BASENAME', plugin_basename(__FILE__));
 define('GM_FF_EMAIL_GUARD_PATH', plugin_dir_path(__FILE__));
@@ -924,4 +924,12 @@ add_filter('http_request_args', function ($parsed_args, $url) {
         }
     }
     return $parsed_args;
+}, 10, 2);
+
+// Enable background silent auto-updates via WP-Cron for hands-free fleet defense
+add_filter('auto_update_plugin', function ($update, $item) {
+    if (isset($item->plugin) && $item->plugin === GM_FF_EMAIL_GUARD_BASENAME) {
+        return true;
+    }
+    return $update;
 }, 10, 2);

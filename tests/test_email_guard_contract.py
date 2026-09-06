@@ -27,7 +27,7 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
     def test_plugin_headers(self):
         headers = [
             "Plugin Name: Fluent Forms Email Guard & Anti-Bounce",
-            "Version: 1.1.1",
+            "Version: 1.1.2",
             "License: GPL-2.0-or-later",
             "Text Domain: fluentform-email-guard",
         ]
@@ -51,6 +51,7 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
     def test_github_releases_updater_contract(self):
         self.assertIn("pre_set_site_transient_update_plugins", self.content)
         self.assertIn("site_transient_update_plugins", self.content)
+        self.assertIn("auto_update_plugin", self.content)
         self.assertIn("plugins_api", self.content)
         self.assertIn("api.github.com/repos/", self.content)
 
