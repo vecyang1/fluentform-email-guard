@@ -34,3 +34,33 @@ meaningful state changes. Do not turn `VAULT.md` into a session diary.
   - Upgraded Admin UI to mask stored tokens, support `__CLEAR__` keyword, and show file isolation status.
   - Upgraded `tests/test_email_guard_contract.py` with 8 comprehensive contract tests (passing 100%).
   - Codified standard into `wp-plugin-development` skill (`references/github-auto-updater.md`, Section 4).
+
+## 2026-09-06 14:00 - Deployment to vectory44.sg-host.com (Yua Dear Studio) & Two-Sided E2E Verification
+
+- Deployed `fluentform-email-guard` to `https://vectory44.sg-host.com/`:
+  - Active in WordPress (`is_plugin_active: YES`).
+  - 8,727 disposable domains synced into `wp-content/uploads/fluentform-email-guard/disposable_domains.json`.
+  - REST status endpoint verified: `https://vectory44.sg-host.com/wp-json/fluentform-email-guard/v1/status` (HTTP 200).
+- Admin Dashboard verified via Chrome DevTools:
+  - Accessible at `/wp-admin/admin.php?page=fluentform-email-guard`.
+  - Defense layers: Syntax, DNS MX, Disposable, Typo Correction, Custom Blocked all active.
+- Two-Sided Front-End Browser E2E Verification (Form #3 on `https://vectory44.sg-host.com/`):
+  - **Negative Test 1 (Disposable Email)**: `tester@mailinator.com` -> Rejected with inline red error: *"Temporary or disposable email addresses are not accepted."* (Saved to telemetry log).
+  - **Negative Test 2 (Typo Domain)**: `tester@gamil.com` -> Rejected with inline red suggestion: *"Did you mean gmail.com? Please verify your email."* (Saved to telemetry log).
+  - **Negative Test 3 (Non-existent MX)**: `tester@fakeinvaliddomain999xyztest.org` -> Rejected with inline red error: *"The domain of this email cannot receive mail. Please check for typos."* (Saved to telemetry log).
+  - **Positive Test (Legitimate Email)**: `client.patron@gmail.com` -> Accepted with HTTP 200, inline success notice rendered (*"Thank you for reaching out! Your inquiry has been received..."*), entry persisted to Fluent Forms DB (`insert_id: 6`, `serial_number: 4`).
+  - **Admin Telemetry Audit Log**: Verified 3 newly captured rejected events visible in real-time in the admin audit table with masked emails, domain names, reason badges, and client IP.
+
+## 2026-09-06 14:10 - Fleet-Wide FG-PAT Rotation & Product[OS] Registration (v1.1.3)
+
+- **Zero Blast Radius Token Rotation Across 6 Production Sites**:
+  - `github_pat_11A7...` applied to `glintmuse.com`, `xinchaovi.com`, `belovedpals.com`, `worldinspirelab.com`, `vectory44.sg-host.com`, `hi.carradiocodes.co.uk`.
+  - Old broad CLI OAuth tokens completely purged from `wp_options`.
+  - All 6 sites verified on `v1.1.3` returning `"version":"1.1.3"` and `"enabled":true` via `/wp-json/fluentform-email-guard/v1/status`.
+  - Two-sided E2E tests (disposable, typo, legitimate) passing 100% on all 6 sites.
+- **Product[OS] Notion Database Ingestion**:
+  - Registered product into authoritative database [Product[OS]](https://app.notion.com/p/dvvv/251e1b432393802e9d47f79037c1794d).
+  - Page URL: `https://app.notion.com/p/Fluent-Forms-Email-Guard-Anti-Bounce-fluentform-email-guard-3d3e1b432393810884f9fa0e09befe75` (Page ID: `3d3e1b43-2393-8108-84f9-fa0e09befe75`).
+  - Pipeline: `Shipped`, Rating: `⭐⭐⭐⭐⭐`, Tag: `Product, Skill`, Product Role: `Standalone`.
+  - Authoritative re-read executed to ensure Single Source of Truth (SSOT) & Unidirectional Data Flow consistency.
+

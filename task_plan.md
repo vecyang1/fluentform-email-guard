@@ -15,12 +15,11 @@
 | T-004 | completed | 2026-09-06 | 2026-09-06 | WordPress native GitHub auto-updater | Agent | None | Verified real-time detection via `site_transient_update_plugins` |
 | T-005 | completed | 2026-09-06 | 2026-09-06 | Deploy fleet across estate sites | Agent | None | `glintmuse.com`, `xinchaovi.com`, `belovedpals.com` running v1.1.1 |
 | T-006 | completed | 2026-09-06 | 2026-09-06 | Uptime Kuma declarative monitoring | Agent | None | Monitor ID 66 applied, 0 unmapped monitors in `kuma_apply.py` |
-| T-008 | completed | 2026-09-06 | 2026-09-06 | Deploy to vectory44.sg-host.com (Yua Dear Studio) | Agent | None | Active, 8727 domains, 3 negative & 1 positive browser E2E tests verified |
-| T-009 | completed | 2026-09-06 | 2026-09-06 | Least-privilege FG-PAT token rotation & zero blast radius verification | Agent | None | Fine-Grained Token active across glintmuse, xinchaovi, belovedpals, worldinspirelab; old broad tokens purged; 0 access to other repos confirmed |
-
+| T-007 | completed | 2026-09-06 | 2026-09-06 | Deploy to remaining estate sites (vectory42/hi.carradiocodes) | Agent | None | v1.1.3 active on hi.carradiocodes.co.uk, 8,725 domains synced, two-sided E2E verified |
+| T-008 | completed | 2026-09-06 | 2026-09-06 | Deploy to vectory44.sg-host.com (Yua Dear Studio) | Agent | None | v1.1.3 active, FG-PAT token configured, two-sided E2E verified |
+| T-009 | completed | 2026-09-06 | 2026-09-06 | Least-privilege FG-PAT token rotation & zero blast radius verification | Agent | None | Fine-Grained Token active across entire 6-site fleet; broad tokens purged; 0 access to other repos confirmed |
+| T-010 | completed | 2026-09-06 | 2026-09-06 | Register product into Product[OS] Notion Database | Agent | None | Page ID 3d3e1b43-2393-8108-84f9-fa0e09befe75 created with status Shipped & 5-star rating |
 
 ## Backlog
 
-| ID | Priority | Created | Updated | Task | Why It Matters | Link |
-| --- | --- | --- | --- | --- | --- | --- |
-| T-007 | low | 2026-09-06 | 2026-09-06 | Deploy to remaining estate sites (vectory42/hi.carradiocodes) | Full coverage across all WordPress clients | `novamira-vectory42-sg-host-com` |
+*(All active fleet deployment and security tasks completed)*
