@@ -27,13 +27,18 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
     def test_plugin_headers(self):
         headers = [
             "Plugin Name: Fluent Forms Email Guard & Anti-Bounce",
-            "Version: 1.1.2",
+            "Version: 1.1.3",
             "License: GPL-2.0-or-later",
             "Text Domain: fluentform-email-guard",
         ]
         for h in headers:
             with self.subTest(header=h):
                 self.assertIn(h, self.content)
+
+    def test_token_least_privilege_and_isolation(self):
+        self.assertIn("gm_ff_email_guard_get_github_token", self.content)
+        self.assertIn("FLUENTFORM_EMAIL_GUARD_GH_TOKEN", self.content)
+        self.assertIn("Least Privilege Standard", self.content)
 
     def test_fluent_forms_validation_hook(self):
         self.assertIn(
