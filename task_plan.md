@@ -19,7 +19,9 @@
 | T-008 | completed | 2026-09-06 | 2026-09-06 | Deploy to vectory44.sg-host.com (Yua Dear Studio) | Agent | None | v1.1.3 active, FG-PAT token configured, two-sided E2E verified |
 | T-009 | completed | 2026-09-06 | 2026-09-06 | Least-privilege FG-PAT token rotation & zero blast radius verification | Agent | None | Fine-Grained Token active across entire 6-site fleet; broad tokens purged; 0 access to other repos confirmed |
 | T-010 | completed | 2026-09-06 | 2026-09-06 | Register product into Product[OS] Notion Database | Agent | None | Page ID 3d3e1b43-2393-8108-84f9-fa0e09befe75 created with status Shipped & 5-star rating |
+| T-011 | completed | 2026-09-06 | 2026-09-06 | Store GitHub PAT in 1Password Agent Automation vault | Agent | None | Item ID blxjpjlvp3ng56j7lys3u4dd6i created & verified via canonical save_credential.py |
 
 ## Backlog
 
 *(All active fleet deployment and security tasks completed)*
+

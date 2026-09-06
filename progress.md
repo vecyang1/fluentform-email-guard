@@ -63,4 +63,14 @@ meaningful state changes. Do not turn `VAULT.md` into a session diary.
   - Page URL: `https://app.notion.com/p/Fluent-Forms-Email-Guard-Anti-Bounce-fluentform-email-guard-3d3e1b432393810884f9fa0e09befe75` (Page ID: `3d3e1b43-2393-8108-84f9-fa0e09befe75`).
   - Pipeline: `Shipped`, Rating: `⭐⭐⭐⭐⭐`, Tag: `Product, Skill`, Product Role: `Standalone`.
   - Authoritative re-read executed to ensure Single Source of Truth (SSOT) & Unidirectional Data Flow consistency.
-
+ 
+- **1Password Secure Automation Credential Ingestion**:
+  - Saved Fine-Grained Personal Access Token via canonical `1password` skill (`save_credential.py`).
+  - Item ID: `blxjpjlvp3ng56j7lys3u4dd6i`
+  - Vault: `Agent Automation` (`adlingmaznhbzjxez5ztpjbysq`)
+  - Category: `API_CREDENTIAL`
+  - Title: `GitHub PAT - fluentform-email-guard updater`
+  - URL: `https://github.com/settings/personal-access-tokens/19233522`
+  - Notes: Scoped strictly to `vecyang1/fluentform-email-guard` (Contents: Read-only).
+  - Unattended op reference: `op://Agent Automation/GitHub PAT - fluentform-email-guard updater/credential`
+  - Verification: Confirmed clean leak-check, zero argv leak via stdin spec redirection, readback verified via `op_unattended.py`.
