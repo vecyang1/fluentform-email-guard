@@ -24,3 +24,13 @@ meaningful state changes. Do not turn `VAULT.md` into a session diary.
   - Added keyword check on `"enabled":true` at interval 300s.
   - Executed `kuma_apply.py` against live SQLite DB on `openclaw-eu`: 0 unmapped monitors, verified clean exit.
 - Skills used: `wheel-check`, `chrome-devtools`, `novamira-ops`, `init-vault-method`.
+
+## 2026-09-06 13:45 - Security Hardening & Fine-Grained Token Isolation (v1.1.3)
+
+- Threat Modeling & Blast Radius Resolution:
+  - Identified that storing broad CLI OAuth tokens (`gho_...`) creates critical lateral risk across all private GitHub repos upon site/DB compromise.
+  - Implemented GitHub Fine-Grained Personal Access Token (FG-PAT) architecture (`Contents: Read-only`, scoped strictly to `vecyang1/fluentform-email-guard`).
+  - Added physical file-level isolation via `wp-config.php` constant `FLUENTFORM_EMAIL_GUARD_GH_TOKEN` over database `wp_options`.
+  - Upgraded Admin UI to mask stored tokens, support `__CLEAR__` keyword, and show file isolation status.
+  - Upgraded `tests/test_email_guard_contract.py` with 8 comprehensive contract tests (passing 100%).
+  - Codified standard into `wp-plugin-development` skill (`references/github-auto-updater.md`, Section 4).

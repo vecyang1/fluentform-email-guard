@@ -3,7 +3,7 @@
  * Plugin Name: Fluent Forms Email Guard & Anti-Bounce
  * Plugin URI: https://github.com/vecyang1/fluentform-email-guard
  * Description: Production-grade multi-layer real-time email defense for Fluent Forms. Blocks disposable/temporary domains (8,700+ domains), verifies live DNS MX records with 24h caching, auto-suggests typo corrections (e.g. gamil.com -> gmail.com), and prevents hard bounces in FluentCRM funnels. Includes GitHub Releases auto-updater.
- * Version: 1.1.2
+ * Version: 1.1.3
  * Author: GlintMuse Engineering & Vec
  * Author URI: https://glintmuse.com/
  * License: GPL-2.0-or-later
@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('GM_FF_EMAIL_GUARD_VERSION', '1.1.2');
+define('GM_FF_EMAIL_GUARD_VERSION', '1.1.3');
 define('GM_FF_EMAIL_GUARD_FILE', __FILE__);
 define('GM_FF_EMAIL_GUARD_BASENAME', plugin_basename(__FILE__));
 define('GM_FF_EMAIL_GUARD_PATH', plugin_dir_path(__FILE__));
@@ -87,6 +87,18 @@ function gm_ff_email_guard_get_config() {
 
 function gm_ff_email_guard_update_config($new_config) {
     return update_option('fluentform_email_guard_config', $new_config);
+}
+
+/**
+ * Retrieve GitHub Token with Least-Privilege & Constant Priority.
+ * Priority: FLUENTFORM_EMAIL_GUARD_GH_TOKEN constant (wp-config.php) > wp_options config['github_token']
+ */
+function gm_ff_email_guard_get_github_token() {
+    if (defined('FLUENTFORM_EMAIL_GUARD_GH_TOKEN') && !empty(FLUENTFORM_EMAIL_GUARD_GH_TOKEN)) {
+        return trim((string)FLUENTFORM_EMAIL_GUARD_GH_TOKEN);
+    }
+    $config = gm_ff_email_guard_get_config();
+    return !empty($config['github_token']) ? trim((string)$config['github_token']) : '';
 }
 
 function gm_ff_email_guard_builtin_disposable_domains() {
@@ -426,7 +438,12 @@ function gm_ff_email_guard_render_admin_page() {
 
             // GitHub Token
             if (isset($_POST['gm_ff_eg_github_token'])) {
-                $current_config['github_token'] = sanitize_text_field($_POST['gm_ff_eg_github_token']);
+                $submitted_token = trim((string)sanitize_text_field($_POST['gm_ff_eg_github_token']));
+                if ($submitted_token === '__CLEAR__') {
+                    $current_config['github_token'] = '';
+                } elseif ($submitted_token !== '' && strpos($submitted_token, '***') === false) {
+                    $current_config['github_token'] = $submitted_token;
+                }
             }
 
             // Blocked domains
@@ -590,8 +607,32 @@ function gm_ff_email_guard_render_admin_page() {
                             <tr>
                                 <th scope="row"><label for="gm_ff_eg_github_token">GitHub Access Token</label></th>
                                 <td>
-                                    <input type="password" name="gm_ff_eg_github_token" id="gm_ff_eg_github_token" value="<?php echo esc_attr($config['github_token'] ?? ''); ?>" class="regular-text" autocomplete="new-password">
-                                    <p class="description">Required for checking updates from the private repository (<code><?php echo esc_html(GM_FF_EMAIL_GUARD_GITHUB_REPO); ?></code>). Generate a fine-grained token or PAT with <code>Contents: read</code> scope.</p>
+                                    <?php if (defined('FLUENTFORM_EMAIL_GUARD_GH_TOKEN') && !empty(FLUENTFORM_EMAIL_GUARD_GH_TOKEN)): ?>
+                                        <p style="color:#00a32a;font-weight:600;margin:0 0 6px 0;">
+                                            <span class="dashicons dashicons-lock" style="vertical-align:middle;"></span>
+                                            Configured via wp-config.php constant (Hardened File-Level Isolation)
+                                        </p>
+                                        <code><?php 
+                                            $c_tok = (string)FLUENTFORM_EMAIL_GUARD_GH_TOKEN;
+                                            echo esc_html(strlen($c_tok) > 12 ? substr($c_tok, 0, 10) . '...' . substr($c_tok, -4) : '********'); 
+                                        ?></code>
+                                        <p class="description">Constant overrides database option. Highly secure against database/SQL injection leaks.</p>
+                                    <?php else: 
+                                        $token_val = $config['github_token'] ?? '';
+                                        $display_val = !empty($token_val) && strlen($token_val) > 12 
+                                            ? substr($token_val, 0, 10) . '...' . substr($token_val, -4) 
+                                            : (!empty($token_val) ? '********' : '');
+                                    ?>
+                                        <input type="password" name="gm_ff_eg_github_token" id="gm_ff_eg_github_token" value="<?php echo esc_attr($token_val); ?>" class="regular-text" autocomplete="new-password" placeholder="github_pat_...">
+                                        <?php if (!empty($display_val)): ?>
+                                            <p class="description" style="color:#2271b1;margin-top:4px;">
+                                                <span class="dashicons dashicons-yes-alt" style="vertical-align:middle;font-size:16px;"></span> Active token in DB: <code><?php echo esc_html($display_val); ?></code> (Enter <code>__CLEAR__</code> to remove)
+                                            </p>
+                                        <?php endif; ?>
+                                        <p class="description">
+                                            <strong>Least Privilege Standard:</strong> Use a GitHub <em>Fine-Grained Personal Access Token</em> scoped strictly to <code><?php echo esc_html(GM_FF_EMAIL_GUARD_GITHUB_REPO); ?></code> with <code>Contents: Read-only</code>.
+                                        </p>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         </table>
@@ -808,14 +849,14 @@ function gm_ff_email_guard_check_github_update($force = false) {
         return $cached;
     }
 
-    $config = gm_ff_email_guard_get_config();
+    $token = gm_ff_email_guard_get_github_token();
     $headers = [
         'User-Agent' => 'WordPress/' . get_bloginfo('version') . '; ' . home_url(),
         'Accept' => 'application/vnd.github.v3+json',
     ];
 
-    if (!empty($config['github_token'])) {
-        $headers['Authorization'] = 'Bearer ' . trim($config['github_token']);
+    if (!empty($token)) {
+        $headers['Authorization'] = 'Bearer ' . $token;
     }
 
     $api_url = 'https://api.github.com/repos/' . GM_FF_EMAIL_GUARD_GITHUB_REPO . '/releases/latest';
@@ -841,7 +882,7 @@ function gm_ff_email_guard_check_github_update($force = false) {
     if (!empty($body['assets']) && is_array($body['assets'])) {
         foreach ($body['assets'] as $asset) {
             if (substr($asset['name'], -4) === '.zip') {
-                $download_url = (!empty($config['github_token']) && !empty($asset['url']))
+                $download_url = (!empty($token) && !empty($asset['url']))
                     ? $asset['url']
                     : ($asset['browser_download_url'] ?? '');
                 break;
@@ -915,9 +956,9 @@ add_filter('plugins_api', function ($result, $action, $args) {
 add_filter('http_request_args', function ($parsed_args, $url) {
     if (strpos($url, 'api.github.com/repos/' . GM_FF_EMAIL_GUARD_GITHUB_REPO) !== false ||
         strpos($url, 'github.com/' . GM_FF_EMAIL_GUARD_GITHUB_REPO) !== false) {
-        $config = gm_ff_email_guard_get_config();
-        if (!empty($config['github_token'])) {
-            $parsed_args['headers']['Authorization'] = 'Bearer ' . trim($config['github_token']);
+        $token = gm_ff_email_guard_get_github_token();
+        if (!empty($token)) {
+            $parsed_args['headers']['Authorization'] = 'Bearer ' . $token;
             if (strpos($url, '/releases/assets/') !== false) {
                 $parsed_args['headers']['Accept'] = 'application/octet-stream';
             }
