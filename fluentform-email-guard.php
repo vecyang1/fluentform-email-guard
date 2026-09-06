@@ -861,7 +861,7 @@ function gm_ff_email_guard_check_github_update($force = false) {
     return $update_info;
 }
 
-add_filter('pre_set_site_transient_update_plugins', function ($transient) {
+$gm_ff_update_transient_filter = function ($transient) {
     if (!is_object($transient)) {
         $transient = new \stdClass();
     }
@@ -883,7 +883,9 @@ add_filter('pre_set_site_transient_update_plugins', function ($transient) {
     }
 
     return $transient;
-});
+};
+add_filter('pre_set_site_transient_update_plugins', $gm_ff_update_transient_filter);
+add_filter('site_transient_update_plugins', $gm_ff_update_transient_filter);
 
 add_filter('plugins_api', function ($result, $action, $args) {
     if ($action !== 'plugin_information' || empty($args->slug) || $args->slug !== 'fluentform-email-guard') {
@@ -916,7 +918,9 @@ add_filter('http_request_args', function ($parsed_args, $url) {
         $config = gm_ff_email_guard_get_config();
         if (!empty($config['github_token'])) {
             $parsed_args['headers']['Authorization'] = 'Bearer ' . trim($config['github_token']);
-            $parsed_args['headers']['Accept'] = 'application/octet-stream';
+            if (strpos($url, '/releases/assets/') !== false) {
+                $parsed_args['headers']['Accept'] = 'application/octet-stream';
+            }
         }
     }
     return $parsed_args;

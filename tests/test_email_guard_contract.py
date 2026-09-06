@@ -50,6 +50,7 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
 
     def test_github_releases_updater_contract(self):
         self.assertIn("pre_set_site_transient_update_plugins", self.content)
+        self.assertIn("site_transient_update_plugins", self.content)
         self.assertIn("plugins_api", self.content)
         self.assertIn("api.github.com/repos/", self.content)
 
