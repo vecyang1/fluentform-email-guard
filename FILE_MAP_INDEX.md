@@ -21,6 +21,8 @@ durable path that future humans or agents must understand.
 | `handoff.md` | Latest resume card with next actor/action | Permanent history |
 | `decisions.md` | Durable decisions and supersession | Session proof |
 | `CHANGELOG.md` | Release-level or user-visible changes when needed | Every agent step |
+| `readme.txt` | WordPress.org Plugin Directory discovery page source of truth (plugin headers, description, screenshots) | Code execution logic or developer task tracking |
+| `.distignore` | Distribution exclusion rules for WordPress.org SVN release packaging | Git commit tracking |
 
 ## Skill Routing
 
@@ -52,6 +54,9 @@ owner:
 
 | Path | Owns | Example |
 | --- | --- | --- |
+| `assets/` | Official WordPress.org discovery assets (banners, icons, screenshots) | `assets/banner-772x250.png`, `assets/icon-256x256.png` |
+| `.github/workflows/` | CI/CD automation (release packaging, PHP matrix tests, WP.org SVN deploy) | `.github/workflows/wporg-deploy.yml`, `.github/workflows/ci-release.yml` |
+| `tests/` | Two-sided contract, security, and lifecycle test suites | `tests/test_email_guard_contract.py` |
 | `docs/` | Durable PRDs, API contracts, architecture notes | `docs/prd_price_alerts.md`, `docs/API.md` |
 | `docs/architecture.md` | System architecture map and update triggers | Module map, data/storage map, integrations, runtime |
 | `docs/funnel.md` | Funnel strategy, page/URL map, page inventory, conversion paths, measurement, journey verification, and lead management | `docs/funnel.md` |

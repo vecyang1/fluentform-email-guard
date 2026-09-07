@@ -23,7 +23,8 @@
 | T-012 | completed | 2026-09-07 | 2026-09-07 | Standardize WordPress.org Directory Publishing Tooling | Agent | None | `skills/wp-plugin-development` wporg_preflight_check.mjs & 10/10 tests passing |
 | T-013 | completed | 2026-09-07 | 2026-09-07 | Upgrade fluentform-email-guard for WordPress.org submission | Agent | None | Name compliant, readme.txt, .distignore, assets/, preflight audit passed 100% |
 | T-014 | completed | 2026-09-07 | 2026-09-07 | Submit initial package to WordPress.org plugin directory | Vec | None | `email-guard-for-fluent-forms.zip` submitted at `add/`, entered review queue (~300 waiting) |
-| T-015 | active | 2026-09-07 | 2026-09-07 | Review queue monitoring & automated watchdog alert | Agent | None | `wporg_queue_watchdog.py` exit code 2 (pending), Uptime Kuma monitor target configured |
+| T-015 | completed | 2026-09-07 | 2026-09-07 | Review queue monitoring & automated watchdog alert | Agent | None | `wporg_queue_watchdog.py` built & verified; exit code 2 (pending) and exit code 0 (approved) tested |
+| T-016 | waiting | 2026-09-07 | 2026-09-07 | WordPress.org review queue clearance & SVN credentials | Vec + Agent | Await review email from `plugins@wordpress.org` | Review queue position ~300 (~5-8 business days) |
 
 ## Backlog
 
