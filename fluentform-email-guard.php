@@ -4,8 +4,8 @@
  * Plugin URI: https://github.com/vecyang1/fluentform-email-guard
  * Description: Production-grade multi-layer real-time email defense for Fluent Forms. Blocks disposable/temporary domains (8,700+ domains), verifies live DNS MX records with 24h caching, auto-suggests typo corrections (e.g. gamil.com -> gmail.com), and prevents hard bounces in FluentCRM funnels. Includes GitHub Releases auto-updater.
  * Version: 1.1.3
- * Author: GlintMuse Engineering & Vec
- * Author URI: https://glintmuse.com/
+ * Author: World Inspire LLC, Vec
+ * Author URI: https://worldinspirelab.com/
  * License: GPL-2.0-or-later
  * Text Domain: fluentform-email-guard
  */
@@ -946,7 +946,7 @@ if (!defined('WPORG_RELEASE') && !defined('FLUENTFORM_EMAIL_GUARD_DISABLE_GH_UPD
         $res->name = 'Email Guard for Fluent Forms';
         $res->slug = 'fluentform-email-guard';
         $res->version = $update['new_version'];
-        $res->author = '<a href="https://glintmuse.com/">GlintMuse Engineering & Vec</a>';
+        $res->author = '<a href="https://worldinspirelab.com/">World Inspire LLC, Vec</a>';
         $res->homepage = 'https://github.com/' . GM_FF_EMAIL_GUARD_GITHUB_REPO;
         $res->download_link = $update['package'];
         $res->sections = [

@@ -1,6 +1,6 @@
 === Email Guard for Fluent Forms ===
 Contributors: vecyang1
-Donate link: https://glintmuse.com/
+Donate link: https://worldinspirelab.com/
 Tags: fluent-forms, email-validation, anti-spam, bounce-prevention, disposable-email
 Requires at least: 6.0
 Tested up to: 6.7
