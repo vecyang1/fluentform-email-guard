@@ -2,12 +2,12 @@
 /**
  * Plugin Name: Email Guard for Fluent Forms
  * Plugin URI: https://github.com/vecyang1/fluentform-email-guard
- * Description: Production-grade multi-layer real-time email defense for Fluent Forms. Blocks disposable/temporary domains (8,700+ domains), verifies live DNS MX records with 24h caching, auto-suggests typo corrections (e.g. gamil.com -> gmail.com), and prevents hard bounces in FluentCRM funnels. Includes GitHub Releases auto-updater.
+ * Description: Production-grade multi-layer real-time email defense for Fluent Forms. Blocks disposable/temporary domains (8,700+ domains), verifies live DNS MX records with 24h caching, auto-suggests typo corrections (e.g. gamil.com -> gmail.com), and prevents hard bounces in FluentCRM funnels.
  * Version: 1.1.3
  * Author: World Inspire LLC, Vec
  * Author URI: https://worldinspirelab.com/
  * License: GPL-2.0-or-later
- * Text Domain: fluentform-email-guard
+ * Text Domain: email-guard-for-fluent-forms
  */
 
 if (!defined('ABSPATH')) {
@@ -27,7 +27,6 @@ function gm_ff_email_guard_default_config() {
     return [
         'enabled' => true,
         'version' => GM_FF_EMAIL_GUARD_VERSION,
-        'github_token' => '',
         'checks' => [
             'syntax' => true,
             'mx' => true,
@@ -87,18 +86,6 @@ function gm_ff_email_guard_get_config() {
 
 function gm_ff_email_guard_update_config($new_config) {
     return update_option('fluentform_email_guard_config', $new_config);
-}
-
-/**
- * Retrieve GitHub Token with Least-Privilege & Constant Priority.
- * Priority: FLUENTFORM_EMAIL_GUARD_GH_TOKEN constant (wp-config.php) > wp_options config['github_token']
- */
-function gm_ff_email_guard_get_github_token() {
-    if (defined('FLUENTFORM_EMAIL_GUARD_GH_TOKEN') && !empty(FLUENTFORM_EMAIL_GUARD_GH_TOKEN)) {
-        return trim((string)FLUENTFORM_EMAIL_GUARD_GH_TOKEN);
-    }
-    $config = gm_ff_email_guard_get_config();
-    return !empty($config['github_token']) ? trim((string)$config['github_token']) : '';
 }
 
 function gm_ff_email_guard_builtin_disposable_domains() {
@@ -436,16 +423,6 @@ function gm_ff_email_guard_render_admin_page() {
             $current_config['checks']['blocked_domains'] = !empty($_POST['gm_ff_eg_check_blocked_domains']);
             $current_config['checks']['role'] = !empty($_POST['gm_ff_eg_check_role']);
 
-            // GitHub Token
-            if (isset($_POST['gm_ff_eg_github_token'])) {
-                $submitted_token = trim((string)sanitize_text_field($_POST['gm_ff_eg_github_token']));
-                if ($submitted_token === '__CLEAR__') {
-                    $current_config['github_token'] = '';
-                } elseif ($submitted_token !== '' && strpos($submitted_token, '***') === false) {
-                    $current_config['github_token'] = $submitted_token;
-                }
-            }
-
             // Blocked domains
             $raw_blocked = sanitize_textarea_field($_POST['gm_ff_eg_blocked_domains'] ?? '');
             $blocked_lines = array_filter(array_map('trim', explode("\n", strtolower($raw_blocked))));
@@ -472,14 +449,6 @@ function gm_ff_email_guard_render_admin_page() {
         } elseif ($action === 'clear_logs') {
             update_option('fluentform_email_guard_logs', []);
             $message = 'Security audit telemetry logs cleared.';
-        } elseif ($action === 'check_updates') {
-            delete_site_transient('update_plugins');
-            $update_info = gm_ff_email_guard_check_github_update(true);
-            if (!empty($update_info['new_version']) && version_compare($update_info['new_version'], GM_FF_EMAIL_GUARD_VERSION, '>')) {
-                $message = sprintf('New version %s is available! Check Plugins page to update.', esc_html($update_info['new_version']));
-            } else {
-                $message = sprintf('You are running the latest version (%s).', GM_FF_EMAIL_GUARD_VERSION);
-            }
         }
     }
 
@@ -604,37 +573,6 @@ function gm_ff_email_guard_render_admin_page() {
                                     <p class="description">Caches DNS lookups in WordPress transients to eliminate form submission delay.</p>
                                 </td>
                             </tr>
-                            <tr>
-                                <th scope="row"><label for="gm_ff_eg_github_token">GitHub Access Token</label></th>
-                                <td>
-                                    <?php if (defined('FLUENTFORM_EMAIL_GUARD_GH_TOKEN') && !empty(FLUENTFORM_EMAIL_GUARD_GH_TOKEN)): ?>
-                                        <p style="color:#00a32a;font-weight:600;margin:0 0 6px 0;">
-                                            <span class="dashicons dashicons-lock" style="vertical-align:middle;"></span>
-                                            Configured via wp-config.php constant (Hardened File-Level Isolation)
-                                        </p>
-                                        <code><?php 
-                                            $c_tok = (string)FLUENTFORM_EMAIL_GUARD_GH_TOKEN;
-                                            echo esc_html(strlen($c_tok) > 12 ? substr($c_tok, 0, 10) . '...' . substr($c_tok, -4) : '********'); 
-                                        ?></code>
-                                        <p class="description">Constant overrides database option. Highly secure against database/SQL injection leaks.</p>
-                                    <?php else: 
-                                        $token_val = $config['github_token'] ?? '';
-                                        $display_val = !empty($token_val) && strlen($token_val) > 12 
-                                            ? substr($token_val, 0, 10) . '...' . substr($token_val, -4) 
-                                            : (!empty($token_val) ? '********' : '');
-                                    ?>
-                                        <input type="password" name="gm_ff_eg_github_token" id="gm_ff_eg_github_token" value="<?php echo esc_attr($token_val); ?>" class="regular-text" autocomplete="new-password" placeholder="github_pat_...">
-                                        <?php if (!empty($display_val)): ?>
-                                            <p class="description" style="color:#2271b1;margin-top:4px;">
-                                                <span class="dashicons dashicons-yes-alt" style="vertical-align:middle;font-size:16px;"></span> Active token in DB: <code><?php echo esc_html($display_val); ?></code> (Enter <code>__CLEAR__</code> to remove)
-                                            </p>
-                                        <?php endif; ?>
-                                        <p class="description">
-                                            <strong>Least Privilege Standard:</strong> Use a GitHub <em>Fine-Grained Personal Access Token</em> scoped strictly to <code><?php echo esc_html(GM_FF_EMAIL_GUARD_GITHUB_REPO); ?></code> with <code>Contents: Read-only</code>.
-                                        </p>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
                         </table>
 
                         <p class="submit">
@@ -646,18 +584,12 @@ function gm_ff_email_guard_render_admin_page() {
 
             <!-- Right: Tools, Test Sandbox & Upstream Sync -->
             <div style="flex:1;min-width:300px;">
-                <!-- Updater Box -->
+                <!-- Plugin Information Box -->
                 <div class="card" style="max-width:none;padding:20px;margin-bottom:20px;">
-                    <h3>GitHub Release Updates</h3>
-                    <p style="font-size:13px;color:#646970;">Managed via authoritative GitHub repository <code><?php echo esc_html(GM_FF_EMAIL_GUARD_GITHUB_REPO); ?></code>.</p>
-                    <p style="font-size:12px;"><strong>Installed Version:</strong> v<?php echo esc_html(GM_FF_EMAIL_GUARD_VERSION); ?></p>
-                    <form method="post" action="">
-                        <?php wp_nonce_field('gm_ff_eg_action_nonce', 'gm_ff_eg_nonce'); ?>
-                        <input type="hidden" name="gm_ff_eg_action" value="check_updates">
-                        <button type="submit" class="button button-secondary" style="width:100%;">
-                            <span class="dashicons dashicons-update-alt" style="vertical-align:middle;"></span> Check for Updates Now
-                        </button>
-                    </form>
+                    <h3>Plugin Information</h3>
+                    <p style="font-size:13px;color:#646970;">Developed by <a href="https://worldinspirelab.com/" target="_blank" rel="noopener">World Inspire LLC</a> for WordPress.org.</p>
+                    <p style="font-size:12px;margin:8px 0 0 0;"><strong>Installed Version:</strong> v<?php echo esc_html(GM_FF_EMAIL_GUARD_VERSION); ?></p>
+                    <p style="font-size:12px;margin:4px 0 0 0;"><strong>Updates:</strong> Managed automatically via WordPress Core</p>
                 </div>
 
                 <!-- Sync Box -->
@@ -834,148 +766,3 @@ register_deactivation_hook(__FILE__, function () {
     }
 });
 
-/**
- * --------------------------------------------------------------------------
- * GitHub Releases Native Plugin Auto-Updater
- * --------------------------------------------------------------------------
- * Enables automatic and 1-click updates from private or public GitHub releases.
- */
-
-function gm_ff_email_guard_check_github_update($force = false) {
-    $transient_key = 'ff_eg_github_release_latest';
-    $cached = get_transient($transient_key);
-
-    if ($cached !== false && !$force) {
-        return $cached;
-    }
-
-    $token = gm_ff_email_guard_get_github_token();
-    $headers = [
-        'User-Agent' => 'WordPress/' . get_bloginfo('version') . '; ' . home_url(),
-        'Accept' => 'application/vnd.github.v3+json',
-    ];
-
-    if (!empty($token)) {
-        $headers['Authorization'] = 'Bearer ' . $token;
-    }
-
-    $api_url = 'https://api.github.com/repos/' . GM_FF_EMAIL_GUARD_GITHUB_REPO . '/releases/latest';
-    $response = wp_remote_get($api_url, [
-        'headers' => $headers,
-        'timeout' => 10,
-    ]);
-
-    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
-        set_transient($transient_key, null, 1800); // 30 min backoff on error
-        return null;
-    }
-
-    $body = json_decode(wp_remote_retrieve_body($response), true);
-    if (!is_array($body) || empty($body['tag_name'])) {
-        return null;
-    }
-
-    $tag_version = ltrim($body['tag_name'], 'v');
-    $download_url = $body['zipball_url'] ?? '';
-
-    // Prefer uploaded .zip release asset if available
-    if (!empty($body['assets']) && is_array($body['assets'])) {
-        foreach ($body['assets'] as $asset) {
-            if (substr($asset['name'], -4) === '.zip') {
-                $download_url = (!empty($token) && !empty($asset['url']))
-                    ? $asset['url']
-                    : ($asset['browser_download_url'] ?? '');
-                break;
-            }
-        }
-    }
-
-    $update_info = [
-        'new_version' => $tag_version,
-        'url' => $body['html_url'] ?? 'https://github.com/' . GM_FF_EMAIL_GUARD_GITHUB_REPO,
-        'package' => $download_url,
-        'body' => $body['body'] ?? '',
-        'published_at' => $body['published_at'] ?? '',
-    ];
-
-    set_transient($transient_key, $update_info, 43200); // cache for 12 hours
-    return $update_info;
-}
-
-$gm_ff_update_transient_filter = function ($transient) {
-    if (!is_object($transient)) {
-        $transient = new \stdClass();
-    }
-
-    $update = gm_ff_email_guard_check_github_update();
-    if ($update && !empty($update['new_version'])) {
-        if (version_compare($update['new_version'], GM_FF_EMAIL_GUARD_VERSION, '>')) {
-            $obj = new \stdClass();
-            $obj->slug = 'fluentform-email-guard';
-            $obj->plugin = GM_FF_EMAIL_GUARD_BASENAME;
-            $obj->new_version = $update['new_version'];
-            $obj->url = $update['url'];
-            $obj->package = $update['package'];
-            $obj->icons = [
-                'default' => 'https://raw.githubusercontent.com/' . GM_FF_EMAIL_GUARD_GITHUB_REPO . '/main/assets/icon.png'
-            ];
-            $transient->response[GM_FF_EMAIL_GUARD_BASENAME] = $obj;
-        }
-    }
-
-    return $transient;
-};
-// Dual-Channel Distribution Guard:
-// WordPress.org Guideline #7 prohibits third-party updaters in directory releases.
-// If WPORG_RELEASE or FLUENTFORM_EMAIL_GUARD_DISABLE_GH_UPDATER is defined, suppress custom GitHub updater hooks.
-if (!defined('WPORG_RELEASE') && !defined('FLUENTFORM_EMAIL_GUARD_DISABLE_GH_UPDATER')) {
-    add_filter('pre_set_site_transient_update_plugins', $gm_ff_update_transient_filter);
-    add_filter('site_transient_update_plugins', $gm_ff_update_transient_filter);
-
-    add_filter('plugins_api', function ($result, $action, $args) {
-        if ($action !== 'plugin_information' || empty($args->slug) || $args->slug !== 'fluentform-email-guard') {
-            return $result;
-        }
-
-        $update = gm_ff_email_guard_check_github_update();
-        if (!$update) {
-            return $result;
-        }
-
-        $res = new \stdClass();
-        $res->name = 'Email Guard for Fluent Forms';
-        $res->slug = 'fluentform-email-guard';
-        $res->version = $update['new_version'];
-        $res->author = '<a href="https://worldinspirelab.com/">World Inspire LLC, Vec</a>';
-        $res->homepage = 'https://github.com/' . GM_FF_EMAIL_GUARD_GITHUB_REPO;
-        $res->download_link = $update['package'];
-        $res->sections = [
-            'description' => 'Multi-layer real-time email defense for Fluent Forms.',
-            'changelog' => wp_kses_post(nl2br($update['body'] ?? 'No changelog provided.')),
-        ];
-        return $res;
-    }, 20, 3);
-
-    // Attach private repo auth token to download request when needed
-    add_filter('http_request_args', function ($parsed_args, $url) {
-        if (strpos($url, 'api.github.com/repos/' . GM_FF_EMAIL_GUARD_GITHUB_REPO) !== false ||
-            strpos($url, 'github.com/' . GM_FF_EMAIL_GUARD_GITHUB_REPO) !== false) {
-            $token = gm_ff_email_guard_get_github_token();
-            if (!empty($token)) {
-                $parsed_args['headers']['Authorization'] = 'Bearer ' . $token;
-                if (strpos($url, '/releases/assets/') !== false) {
-                    $parsed_args['headers']['Accept'] = 'application/octet-stream';
-                }
-            }
-        }
-        return $parsed_args;
-    }, 10, 2);
-
-    // Enable background silent auto-updates via WP-Cron for hands-free fleet defense
-    add_filter('auto_update_plugin', function ($update, $item) {
-        if (isset($item->plugin) && $item->plugin === GM_FF_EMAIL_GUARD_BASENAME) {
-            return true;
-        }
-        return $update;
-    }, 10, 2);
-}

@@ -3,7 +3,7 @@ Contributors: vecyang1
 Donate link: https://worldinspirelab.com/
 Tags: fluent-forms, email-validation, anti-spam, bounce-prevention, disposable-email
 Requires at least: 6.0
-Tested up to: 6.7
+Tested up to: 7.1
 Requires PHP: 8.0
 Stable tag: 1.1.3
 License: GPLv2 or later
@@ -53,6 +53,14 @@ The plugin bundles an initial snapshot of over 8,700 disposable domains and prov
 
 = Can I whitelist corporate or customer domains? =
 Yes. You can add specific domains to the whitelist section to bypass MX and disposable checks.
+
+== External Services ==
+
+This plugin can optionally synchronize an updated list of disposable email domains via WP-Cron:
+* Service: Disposable Email Domains Blocklist by disposable-email-domains (https://github.com/disposable-email-domains/disposable-email-domains)
+* Purpose: Refreshes the local JSON list of temporary disposable domains to protect against new throwaway inbox providers.
+* Privacy: No personal data or form submission content is ever transmitted to GitHub or any third party. The plugin executes a standard HTTP GET request to download the public domain text file.
+* Terms / License: https://github.com/disposable-email-domains/disposable-email-domains/blob/master/LICENSE
 
 == Screenshots ==
 
