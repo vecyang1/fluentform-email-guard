@@ -106,3 +106,31 @@ meaningful state changes. Do not turn `VAULT.md` into a session diary.
   - Verified two-sided execution: tested `email-guard-for-fluent-forms` -> `PENDING_REVIEW` (exit code 2); tested `fluentform` -> `APPROVED` (exit code 0).
   - Webhook & Uptime Kuma target: Supports `--webhook <url>` (e.g. `https://n.worldinspirelab.com/...`) and Uptime Kuma keyword monitor for zero-touch mobile/Telegram push notifications upon approval.
 
+## 2026-09-07 13:12 - WordPress.org Automated Scanner Resolution & Official Queue Pass
+
+- **Automated Check Failure Diagnosis**:
+  - Initial upload encountered static scanner rejections:
+    1. `plugin_updater_detected`: AST scanner flagged `site_transient_update_plugins`, `auto_update_plugin`, `_site_transient_update_plugins`.
+    2. `outdated_tested_upto_header`: `Tested up to: 6.7 < 7.1`.
+    3. `textdomain_mismatch`: Found `fluentform-email-guard`, expected `email-guard-for-fluent-forms`.
+- **Architectural & Hardening Resolution**:
+  - WordPress.org automated checks execute static tokenization (tokenizer/regex). Runtime guards like `if (!defined('WPORG_RELEASE'))` fail AST analysis.
+  - Per Guideline #7, directory plugins are natively updated by WordPress Core via `api.wordpress.org`. Custom updater hooks and GitHub token configuration were completely excised.
+  - Aligned `Text Domain: email-guard-for-fluent-forms`.
+  - Updated `readme.txt` header to `Tested up to: 7.1`.
+  - Added `== External Services ==` disclosure in `readme.txt` documenting GitHub disposable email domain list syncing.
+  - Rebuilt package `email-guard-for-fluent-forms.zip`.
+- **Toolchain Upgrades (`skills/wp-plugin-development`)**:
+  - Hardened `scripts/wporg_preflight_check.mjs` to unconditionally reject updater hooks, check Tested up to freshness, verify Text Domain slug parity, and unpack/audit `.zip` archives.
+  - Expanded `tests/test_wporg_preflight.mjs` to 14 two-sided tests (14/14 green).
+  - Documented in `references/wporg-directory-publishing.md` (Sections 7 & 10, covering WordPress Playground in-browser PCP blueprint link and Choosing the Rung governance).
+- **Real Page Evidence (对答案)**:
+  - Re-uploaded to `https://wordpress.org/plugins/developers/add/`:
+  - `Results of Automated Plugin Scanning: Pass`
+  - Current Status: `Awaiting Review — This plugin has not yet been reviewed.`
+  - Review Queue: 261 plugins awaiting first review.
+  - Assigned Slug: `email-guard-for-fluent-forms`.
+  - Confirmation email received at `yanghxmail@gmail.com`.
+  - Playground PCP Blueprint URL generated for instant WASM browser testing.
+
+

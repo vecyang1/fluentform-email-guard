@@ -24,10 +24,12 @@
 | T-013 | completed | 2026-09-07 | 2026-09-07 | Upgrade fluentform-email-guard for WordPress.org submission | Agent | None | Name compliant, readme.txt, .distignore, assets/, preflight audit passed 100% |
 | T-014 | completed | 2026-09-07 | 2026-09-07 | Submit initial package to WordPress.org plugin directory | Vec | None | `email-guard-for-fluent-forms.zip` submitted at `add/`, entered review queue (~300 waiting) |
 | T-015 | completed | 2026-09-07 | 2026-09-07 | Review queue monitoring & automated watchdog alert | Agent | None | `wporg_queue_watchdog.py` built & verified; exit code 2 (pending) and exit code 0 (approved) tested |
-| T-016 | waiting | 2026-09-07 | 2026-09-07 | WordPress.org review queue clearance & SVN credentials | Vec + Agent | Await review email from `plugins@wordpress.org` | Review queue position ~300 (~5-8 business days) |
+| T-016 | waiting | 2026-09-07 | 2026-09-07 | WordPress.org review queue clearance & SVN credentials | Vec + Agent | Await review email from `plugins@wordpress.org` | Automated Scan: PASS. 261 plugins waiting in queue, email confirmation sent to `yanghxmail@gmail.com` |
+| T-017 | completed | 2026-09-07 | 2026-09-07 | Resolve WordPress.org automated scanner check failures | Agent | None | Purged updater hooks (Guideline #7), updated Tested up to 7.1, slug-matched textdomain, uploaded zip passed scanner cleanly |
 
 ## Backlog
 
 - [ ] **Configure SVN Credentials & Release**: Upon review approval email from `plugins@wordpress.org`, add `SVN_USERNAME` and `SVN_PASSWORD` to GitHub Secrets, then push tag `v1.1.4` to trigger 10up SVN deploy.
+
 
 
