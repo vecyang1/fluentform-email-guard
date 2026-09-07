@@ -1,0 +1,32 @@
+# Version control & CI/CD
+.git/
+.github/
+.gitignore
+.distignore
+
+# Testing & build tooling
+tests/
+phpunit.xml
+composer.json
+composer.lock
+package.json
+package-lock.json
+node_modules/
+
+# Agent documentation & internal vaults
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+VAULT.md
+decisions.md
+task_plan.md
+progress.md
+handoff.md
+FILE_MAP_INDEX.md
+README.md
+vault/
+operations/
+docs/
+resources/
+scratch/
+.env*

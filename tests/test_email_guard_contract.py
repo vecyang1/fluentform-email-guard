@@ -26,7 +26,7 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
 
     def test_plugin_headers(self):
         headers = [
-            "Plugin Name: Fluent Forms Email Guard & Anti-Bounce",
+            "Plugin Name: Email Guard for Fluent Forms",
             "Version: 1.1.3",
             "License: GPL-2.0-or-later",
             "Text Domain: fluentform-email-guard",
@@ -59,6 +59,35 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
         self.assertIn("auto_update_plugin", self.content)
         self.assertIn("plugins_api", self.content)
         self.assertIn("api.github.com/repos/", self.content)
+
+    def test_wporg_dual_channel_updater_guard(self):
+        self.assertIn("WPORG_RELEASE", self.content)
+        self.assertIn("FLUENTFORM_EMAIL_GUARD_DISABLE_GH_UPDATER", self.content)
+
+    def test_readme_txt_and_distignore_parity(self):
+        readme_path = REPO_ROOT / "readme.txt"
+        self.assertTrue(readme_path.is_file(), "readme.txt must exist")
+        readme_txt = readme_path.read_text(encoding="utf-8")
+        self.assertIn("=== Email Guard for Fluent Forms ===", readme_txt)
+        self.assertIn("Stable tag: 1.1.3", readme_txt)
+        self.assertIn("== Description ==", readme_txt)
+        self.assertIn("== Installation ==", readme_txt)
+        self.assertIn("== Changelog ==", readme_txt)
+
+        distignore_path = REPO_ROOT / ".distignore"
+        self.assertTrue(distignore_path.is_file(), ".distignore must exist")
+        distignore_txt = distignore_path.read_text(encoding="utf-8")
+        self.assertIn(".git/", distignore_txt)
+        self.assertIn("tests/", distignore_txt)
+        self.assertIn(".env*", distignore_txt)
+
+    def test_directory_assets_exist(self):
+        assets_dir = REPO_ROOT / "assets"
+        self.assertTrue(assets_dir.is_dir(), "assets/ directory must exist")
+        self.assertTrue((assets_dir / "banner-772x250.png").is_file())
+        self.assertTrue((assets_dir / "banner-1544x500.png").is_file())
+        self.assertTrue((assets_dir / "icon-256x256.png").is_file())
+        self.assertTrue((assets_dir / "icon.svg").is_file())
 
     def test_wp_cron_weekly_sync(self):
         self.assertIn("gm_ff_email_guard_weekly_sync", self.content)
