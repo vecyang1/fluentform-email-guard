@@ -1,0 +1,42 @@
+name: Deploy to WordPress.org
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  wporg-audit-and-deploy:
+    name: WP.org Preflight & SVN Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+
+      - name: Run PHP Syntax Check
+        run: php -l fluentform-email-guard.php
+
+      - name: Run Official WordPress Plugin Check (PCP)
+        uses: wordpress/plugin-check-action@v1
+        continue-on-error: true # Allows annotations in GitHub PR/Action
+        with:
+          exclude-directories: 'tests,vault,operations,resources'
+
+      - name: Deploy to WordPress.org SVN
+        uses: 10up/action-wordpress-plugin-deploy@stable
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: email-guard-for-fluent-forms

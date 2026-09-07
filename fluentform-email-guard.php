@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Fluent Forms Email Guard & Anti-Bounce
+ * Plugin Name: Email Guard for Fluent Forms
  * Plugin URI: https://github.com/vecyang1/fluentform-email-guard
  * Description: Production-grade multi-layer real-time email defense for Fluent Forms. Blocks disposable/temporary domains (8,700+ domains), verifies live DNS MX records with 24h caching, auto-suggests typo corrections (e.g. gamil.com -> gmail.com), and prevents hard bounces in FluentCRM funnels. Includes GitHub Releases auto-updater.
  * Version: 1.1.3
@@ -925,52 +925,57 @@ $gm_ff_update_transient_filter = function ($transient) {
 
     return $transient;
 };
-add_filter('pre_set_site_transient_update_plugins', $gm_ff_update_transient_filter);
-add_filter('site_transient_update_plugins', $gm_ff_update_transient_filter);
+// Dual-Channel Distribution Guard:
+// WordPress.org Guideline #7 prohibits third-party updaters in directory releases.
+// If WPORG_RELEASE or FLUENTFORM_EMAIL_GUARD_DISABLE_GH_UPDATER is defined, suppress custom GitHub updater hooks.
+if (!defined('WPORG_RELEASE') && !defined('FLUENTFORM_EMAIL_GUARD_DISABLE_GH_UPDATER')) {
+    add_filter('pre_set_site_transient_update_plugins', $gm_ff_update_transient_filter);
+    add_filter('site_transient_update_plugins', $gm_ff_update_transient_filter);
 
-add_filter('plugins_api', function ($result, $action, $args) {
-    if ($action !== 'plugin_information' || empty($args->slug) || $args->slug !== 'fluentform-email-guard') {
-        return $result;
-    }
+    add_filter('plugins_api', function ($result, $action, $args) {
+        if ($action !== 'plugin_information' || empty($args->slug) || $args->slug !== 'fluentform-email-guard') {
+            return $result;
+        }
 
-    $update = gm_ff_email_guard_check_github_update();
-    if (!$update) {
-        return $result;
-    }
+        $update = gm_ff_email_guard_check_github_update();
+        if (!$update) {
+            return $result;
+        }
 
-    $res = new \stdClass();
-    $res->name = 'Fluent Forms Email Guard & Anti-Bounce';
-    $res->slug = 'fluentform-email-guard';
-    $res->version = $update['new_version'];
-    $res->author = '<a href="https://glintmuse.com/">GlintMuse Engineering & Vec</a>';
-    $res->homepage = 'https://github.com/' . GM_FF_EMAIL_GUARD_GITHUB_REPO;
-    $res->download_link = $update['package'];
-    $res->sections = [
-        'description' => 'Multi-layer real-time email defense for Fluent Forms.',
-        'changelog' => wp_kses_post(nl2br($update['body'] ?? 'No changelog provided.')),
-    ];
-    return $res;
-}, 20, 3);
+        $res = new \stdClass();
+        $res->name = 'Email Guard for Fluent Forms';
+        $res->slug = 'fluentform-email-guard';
+        $res->version = $update['new_version'];
+        $res->author = '<a href="https://glintmuse.com/">GlintMuse Engineering & Vec</a>';
+        $res->homepage = 'https://github.com/' . GM_FF_EMAIL_GUARD_GITHUB_REPO;
+        $res->download_link = $update['package'];
+        $res->sections = [
+            'description' => 'Multi-layer real-time email defense for Fluent Forms.',
+            'changelog' => wp_kses_post(nl2br($update['body'] ?? 'No changelog provided.')),
+        ];
+        return $res;
+    }, 20, 3);
 
-// Attach private repo auth token to download request when needed
-add_filter('http_request_args', function ($parsed_args, $url) {
-    if (strpos($url, 'api.github.com/repos/' . GM_FF_EMAIL_GUARD_GITHUB_REPO) !== false ||
-        strpos($url, 'github.com/' . GM_FF_EMAIL_GUARD_GITHUB_REPO) !== false) {
-        $token = gm_ff_email_guard_get_github_token();
-        if (!empty($token)) {
-            $parsed_args['headers']['Authorization'] = 'Bearer ' . $token;
-            if (strpos($url, '/releases/assets/') !== false) {
-                $parsed_args['headers']['Accept'] = 'application/octet-stream';
+    // Attach private repo auth token to download request when needed
+    add_filter('http_request_args', function ($parsed_args, $url) {
+        if (strpos($url, 'api.github.com/repos/' . GM_FF_EMAIL_GUARD_GITHUB_REPO) !== false ||
+            strpos($url, 'github.com/' . GM_FF_EMAIL_GUARD_GITHUB_REPO) !== false) {
+            $token = gm_ff_email_guard_get_github_token();
+            if (!empty($token)) {
+                $parsed_args['headers']['Authorization'] = 'Bearer ' . $token;
+                if (strpos($url, '/releases/assets/') !== false) {
+                    $parsed_args['headers']['Accept'] = 'application/octet-stream';
+                }
             }
         }
-    }
-    return $parsed_args;
-}, 10, 2);
+        return $parsed_args;
+    }, 10, 2);
 
-// Enable background silent auto-updates via WP-Cron for hands-free fleet defense
-add_filter('auto_update_plugin', function ($update, $item) {
-    if (isset($item->plugin) && $item->plugin === GM_FF_EMAIL_GUARD_BASENAME) {
-        return true;
-    }
-    return $update;
-}, 10, 2);
+    // Enable background silent auto-updates via WP-Cron for hands-free fleet defense
+    add_filter('auto_update_plugin', function ($update, $item) {
+        if (isset($item->plugin) && $item->plugin === GM_FF_EMAIL_GUARD_BASENAME) {
+            return true;
+        }
+        return $update;
+    }, 10, 2);
+}

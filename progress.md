@@ -74,3 +74,22 @@ meaningful state changes. Do not turn `VAULT.md` into a session diary.
   - Notes: Scoped strictly to `vecyang1/fluentform-email-guard` (Contents: Read-only).
   - Unattended op reference: `op://Agent Automation/GitHub PAT - fluentform-email-guard updater/credential`
   - Verification: Confirmed clean leak-check, zero argv leak via stdin spec redirection, readback verified via `op_unattended.py`.
+
+## 2026-09-07 12:05 - WordPress.org Directory Publishing & Toolchain Standardization
+
+- **Unified Toolchain Standardization (`skills/wp-plugin-development`)**:
+  - Created authoritative documentation: `skills/wp-plugin-development/references/wporg-directory-publishing.md` (covering trademark guidelines, SVN layout, dual-channel updater architecture, and CI/CD).
+  - Built agent-native preflight CLI: `skills/wp-plugin-development/scripts/wporg_preflight_check.mjs`.
+  - Built two-sided contract test suite: `skills/wp-plugin-development/tests/test_wporg_preflight.mjs` (testing both compliant plugins and violation traps: trademark violations, version parity drift, missing `.distignore`, and unhedged third-party updaters — 10/10 tests passed).
+  - Updated `skills/wp-plugin-development/SKILL.md` with Section 8 registration.
+- **Project Upgrade (`fluentform-email-guard`)**:
+  - Trademark Compliance: Renamed plugin to `Email Guard for Fluent Forms` in code and readme to eliminate trademark rejection risk.
+  - Dual-Channel Distribution Architecture: Guarded GitHub update hooks with `WPORG_RELEASE` and `FLUENTFORM_EMAIL_GUARD_DISABLE_GH_UPDATER` to prevent WordPress.org update hijacking violations (D-007).
+  - Created official WordPress `readme.txt` strictly conforming to standard Markdown and SSOT header parity.
+  - Created `.distignore` to prevent development, test, and private vault files from leaking into SVN.
+  - Generated professional discovery assets in `assets/`: `banner-772x250.png`, `banner-1544x500.png`, `icon-128x128.png`, `icon-256x256.png`, `icon.svg`, and `screenshot-1.png`.
+  - Built CI/CD automated deployment workflow: `.github/workflows/wporg-deploy.yml` with `WordPress/plugin-check-action` and `10up/action-wordpress-plugin-deploy`.
+  - Packaged clean submission zip: `email-guard-for-fluent-forms.zip`.
+- **Verification Evidence**:
+  - `wporg_preflight_check.mjs` executed: 0 blocking violations, `RESULT: PASSED (Ready for WordPress.org Submission)`.
+  - Contract test suite: 11 tests in `test_email_guard_contract.py` passed 100%.

@@ -2,14 +2,14 @@
 
 | Field | Value |
 | --- | --- |
-| Subject | Project initialization |
-| Last Updated | 2026-09-06 12:41 |
-| Updated By | init_vault.py (placeholder — re-stamp with your actor: `Model (interface) — skill, mode`) |
-| Requested By | Human owner |
-| Next Actor | Human or next agent |
-| Next Required Action | Fill project-specific goals, commands, and risks in `VAULT.md`; create `README.md` only when preparing public/community push or broad human handoff. |
-| Current Blocker | Starter context still needs owner review. |
-| Evidence | `VAULT.md`, `task_plan.md`, `progress.md`, `FILE_MAP_INDEX.md` |
+| Subject | WordPress.org Plugin Directory Submission Readiness & Toolchain Standardization |
+| Last Updated | 2026-09-07 12:05 |
+| Updated By | Gemini (Antigravity IDE) — wp-plugin-development, wheel-check |
+| Requested By | Vec |
+| Next Actor | Vec (Human owner) |
+| Next Required Action | Upload `email-guard-for-fluent-forms.zip` to `https://wordpress.org/plugins/developers/add/`; upon approval, add `SVN_USERNAME` and `SVN_PASSWORD` to GitHub Secrets. |
+| Current Blocker | None. Code, assets, readme.txt, and CI/CD workflow pass 100% of preflight checks. |
+| Evidence | `email-guard-for-fluent-forms.zip`, `wporg_preflight_check.mjs`, `tests/test_email_guard_contract.py` |
 
 ## Resume Notes
 
