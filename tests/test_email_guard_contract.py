@@ -29,16 +29,25 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
             "Plugin Name: Email Guard for Fluent Forms",
             "Version: 1.1.3",
             "License: GPL-2.0-or-later",
-            "Text Domain: fluentform-email-guard",
+            "Text Domain: email-guard-for-fluent-forms",
         ]
         for h in headers:
             with self.subTest(header=h):
                 self.assertIn(h, self.content)
 
-    def test_token_least_privilege_and_isolation(self):
-        self.assertIn("gm_ff_email_guard_get_github_token", self.content)
-        self.assertIn("FLUENTFORM_EMAIL_GUARD_GH_TOKEN", self.content)
-        self.assertIn("Least Privilege Standard", self.content)
+    def test_wporg_guideline_7_zero_third_party_updater(self):
+        """WordPress.org Guideline #7: Hosted plugins may not contain third-party update checkers."""
+        forbidden_strings = [
+            "site_transient_update_plugins",
+            "pre_set_site_transient_update_plugins",
+            "auto_update_plugin",
+            "_site_transient_update_plugins",
+            "gm_ff_email_guard_check_github_update",
+            "gm_ff_email_guard_get_github_token",
+        ]
+        for s in forbidden_strings:
+            with self.subTest(forbidden=s):
+                self.assertNotIn(s, self.content, f"Forbidden updater symbol '{s}' must not exist in plugin")
 
     def test_fluent_forms_validation_hook(self):
         self.assertIn(
@@ -53,24 +62,15 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
             "Admin menu hook must run at priority 99 to prevent timing collision with fluent_forms"
         )
 
-    def test_github_releases_updater_contract(self):
-        self.assertIn("pre_set_site_transient_update_plugins", self.content)
-        self.assertIn("site_transient_update_plugins", self.content)
-        self.assertIn("auto_update_plugin", self.content)
-        self.assertIn("plugins_api", self.content)
-        self.assertIn("api.github.com/repos/", self.content)
-
-    def test_wporg_dual_channel_updater_guard(self):
-        self.assertIn("WPORG_RELEASE", self.content)
-        self.assertIn("FLUENTFORM_EMAIL_GUARD_DISABLE_GH_UPDATER", self.content)
-
     def test_readme_txt_and_distignore_parity(self):
         readme_path = REPO_ROOT / "readme.txt"
         self.assertTrue(readme_path.is_file(), "readme.txt must exist")
         readme_txt = readme_path.read_text(encoding="utf-8")
         self.assertIn("=== Email Guard for Fluent Forms ===", readme_txt)
+        self.assertIn("Tested up to: 7.1", readme_txt)
         self.assertIn("Stable tag: 1.1.3", readme_txt)
         self.assertIn("== Description ==", readme_txt)
+        self.assertIn("== External Services ==", readme_txt)
         self.assertIn("== Installation ==", readme_txt)
         self.assertIn("== Changelog ==", readme_txt)
 
