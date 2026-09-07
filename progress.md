@@ -93,3 +93,16 @@ meaningful state changes. Do not turn `VAULT.md` into a session diary.
 - **Verification Evidence**:
   - `wporg_preflight_check.mjs` executed: 0 blocking violations, `RESULT: PASSED (Ready for WordPress.org Submission)`.
   - Contract test suite: 11 tests in `test_email_guard_contract.py` passed 100%.
+
+## 2026-09-07 12:18 - WordPress.org Submission & Queue Watchdog Implementation
+
+- **Submission Execution**:
+  - User uploaded `email-guard-for-fluent-forms.zip` to `https://wordpress.org/plugins/developers/add/`.
+  - Successfully entered official review queue (~300 plugins waiting).
+  - Confirmed 5-source collision verification: WP.org plugin API, WP.org search API, public web search, Fluent Forms documentation, and trademark guidelines.
+  - Entity alignment: Author metadata updated to `World Inspire LLC, Vec` with Author URI `https://worldinspirelab.com/`.
+- **Queue Watchdog & Notification Engine (`skills/wp-plugin-development`)**:
+  - Built `skills/wp-plugin-development/scripts/wporg_queue_watchdog.py`: polls `api.wordpress.org/plugins/info/1.2/`, handles 404 cleanly as `pending_review` (exit code 2), and reports `approved` (exit code 0) the moment the plugin is approved.
+  - Verified two-sided execution: tested `email-guard-for-fluent-forms` -> `PENDING_REVIEW` (exit code 2); tested `fluentform` -> `APPROVED` (exit code 0).
+  - Webhook & Uptime Kuma target: Supports `--webhook <url>` (e.g. `https://n.worldinspirelab.com/...`) and Uptime Kuma keyword monitor for zero-touch mobile/Telegram push notifications upon approval.
+
