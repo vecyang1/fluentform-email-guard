@@ -5,6 +5,24 @@ All notable changes to the "Email Guard for Fluent Forms" plugin will be documen
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.4] - 2026-09-09
+
+### Added
+- Bundled canonical dataset of 8,742 disposable email domains offline in `data/disposable_domains.json` for zero-latency, zero-external-network detection.
+- Authenticated diagnostics endpoint `/wp-json/fluentform-email-guard/v1/admin/status` requiring `manage_options` capability.
+
+### Changed
+- **REST Security**: Guarded `/wp-json/fluentform-email-guard/v1/test` with `current_user_can('manage_options')` and REST API nonce verification.
+- **REST Status Sanitization**: Public `/wp-json/fluentform-email-guard/v1/status` now returns minimal health payload (`status`, `enabled`, `version`) to prevent unauthenticated telemetry or IP leakage.
+- **Offline Compliance**: Removed remote downloading of disposable lists and disabled WP-Cron scheduled event `gm_ff_email_guard_weekly_sync`.
+- **Directory Contributors**: Added submitting contributor `hxsmyxh` alongside `vecyang1`.
+- **Repository Visibility**: Made GitHub repository `vecyang1/fluentform-email-guard` public.
+
+### Fixed
+- **Plugin Check Compliance**: Added `wp_unslash()`, `absint()`, and array key validation to `$_SERVER['REMOTE_ADDR']`, `$_SERVER['REQUEST_METHOD']`, and `$_POST` inputs.
+- **I18n & Escaping**: Replaced unescaped `wp_die(__('...'))` with `wp_die(esc_html__('...', 'email-guard-for-fluent-forms'))`.
+- **Timezone Safety**: Replaced PHP `date()` with `gmdate()`.
+
 ## [1.1.3] - 2026-09-07
 
 ### Added

@@ -27,7 +27,7 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
     def test_plugin_headers(self):
         headers = [
             "Plugin Name: Email Guard for Fluent Forms",
-            "Version: 1.1.3",
+            "Version: 1.1.4",
             "License: GPL-2.0-or-later",
             "Text Domain: email-guard-for-fluent-forms",
         ]
@@ -67,12 +67,15 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
         self.assertTrue(readme_path.is_file(), "readme.txt must exist")
         readme_txt = readme_path.read_text(encoding="utf-8")
         self.assertIn("=== Email Guard for Fluent Forms ===", readme_txt)
+        self.assertIn("Contributors: hxsmyxh, vecyang1", readme_txt)
         self.assertIn("Tested up to: 7.1", readme_txt)
-        self.assertIn("Stable tag: 1.1.3", readme_txt)
+        self.assertIn("Stable tag: 1.1.4", readme_txt)
         self.assertIn("== Description ==", readme_txt)
         self.assertIn("== External Services ==", readme_txt)
         self.assertIn("== Installation ==", readme_txt)
         self.assertIn("== Changelog ==", readme_txt)
+        self.assertIn("= 1.1.4 =", readme_txt)
+        self.assertIn("https://github.com/disposable-email-domains/disposable-email-domains/blob/main/LICENSE.txt", readme_txt)
 
         distignore_path = REPO_ROOT / ".distignore"
         self.assertTrue(distignore_path.is_file(), ".distignore must exist")
@@ -89,15 +92,31 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
         self.assertTrue((assets_dir / "icon-256x256.png").is_file())
         self.assertTrue((assets_dir / "icon.svg").is_file())
 
-    def test_wp_cron_weekly_sync(self):
-        self.assertIn("gm_ff_email_guard_weekly_sync", self.content)
-        self.assertIn("wp_schedule_event", self.content)
-        self.assertIn("disposable-email-domains", self.content)
+    def test_zero_remote_download_and_offline_bundle(self):
+        """Ensure no remote file downloading or WP-Cron scheduling exists (WordPress.org Guideline)."""
+        self.assertNotIn("wp_schedule_event", self.content, "Must not schedule WP-Cron for remote syncing")
+        self.assertNotIn("raw.githubusercontent.com", self.content, "Must not fetch raw remote GitHub lists")
+        self.assertIn("data/disposable_domains.json", self.content, "Must load bundled disposable domains")
 
-    def test_rest_api_endpoints(self):
+        data_file = REPO_ROOT / "data" / "disposable_domains.json"
+        self.assertTrue(data_file.is_file(), "Bundled data/disposable_domains.json must exist")
+        import json
+        domains = json.loads(data_file.read_text(encoding="utf-8"))
+        self.assertGreaterEqual(len(domains), 8000, "Bundled domains must contain 8,000+ entries")
+
+    def test_rest_api_endpoints_security(self):
         self.assertIn("register_rest_route", self.content)
         self.assertIn("/email-guard/test", self.content)
         self.assertIn("/email-guard/status", self.content)
+        self.assertIn("/admin/status", self.content)
+        self.assertIn("current_user_can('manage_options')", self.content)
+
+    def test_sanitization_and_escaping_compliance(self):
+        self.assertIn("wp_unslash($_SERVER['REMOTE_ADDR'])", self.content)
+        self.assertIn("wp_unslash($_POST['gm_ff_eg_action'])", self.content)
+        self.assertIn("absint(wp_unslash($_POST['gm_ff_eg_cache_ttl']))", self.content)
+        self.assertIn("esc_html__('You do not have permission to access this page.', 'email-guard-for-fluent-forms')", self.content)
+        self.assertIn("gmdate(", self.content)
 
 
 if __name__ == "__main__":

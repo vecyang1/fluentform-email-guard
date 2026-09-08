@@ -3,7 +3,7 @@
  * Plugin Name: Email Guard for Fluent Forms
  * Plugin URI: https://github.com/vecyang1/fluentform-email-guard
  * Description: Production-grade multi-layer real-time email defense for Fluent Forms. Blocks disposable/temporary domains (8,700+ domains), verifies live DNS MX records with 24h caching, auto-suggests typo corrections (e.g. gamil.com -> gmail.com), and prevents hard bounces in FluentCRM funnels.
- * Version: 1.1.3
+ * Version: 1.1.4
  * Author: World Inspire LLC, Vec
  * Author URI: https://worldinspirelab.com/
  * License: GPL-2.0-or-later
@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('GM_FF_EMAIL_GUARD_VERSION', '1.1.3');
+define('GM_FF_EMAIL_GUARD_VERSION', '1.1.4');
 define('GM_FF_EMAIL_GUARD_FILE', __FILE__);
 define('GM_FF_EMAIL_GUARD_BASENAME', plugin_basename(__FILE__));
 define('GM_FF_EMAIL_GUARD_PATH', plugin_dir_path(__FILE__));
@@ -105,12 +105,19 @@ function gm_ff_email_guard_get_disposable_domains() {
         return $domain_map;
     }
 
+    $bundled_file = GM_FF_EMAIL_GUARD_PATH . 'data/disposable_domains.json';
     $upload_dir = wp_upload_dir();
-    $cache_file = $upload_dir['basedir'] . '/fluentform-email-guard/disposable_domains.json';
+    $override_file = $upload_dir['basedir'] . '/fluentform-email-guard/disposable_domains.json';
     $domains = [];
 
-    if (file_exists($cache_file)) {
-        $raw = file_get_contents($cache_file);
+    if (file_exists($bundled_file)) {
+        $raw = file_get_contents($bundled_file);
+        $decoded = json_decode($raw, true);
+        if (is_array($decoded) && !empty($decoded)) {
+            $domains = $decoded;
+        }
+    } elseif (file_exists($override_file)) {
+        $raw = file_get_contents($override_file);
         $decoded = json_decode($raw, true);
         if (is_array($decoded) && !empty($decoded)) {
             $domains = $decoded;
@@ -120,46 +127,6 @@ function gm_ff_email_guard_get_disposable_domains() {
     $all_domains = array_unique(array_merge(gm_ff_email_guard_builtin_disposable_domains(), (array)$domains));
     $domain_map = array_flip($all_domains);
     return $domain_map;
-}
-
-function gm_ff_email_guard_sync_disposable_list() {
-    $url = 'https://raw.githubusercontent.com/disposable-email-domains/disposable-email-domains/master/disposable_email_blocklist.conf';
-    $response = wp_remote_get($url, ['timeout' => 12]);
-
-    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
-        return [
-            'success' => false,
-            'error' => is_wp_error($response) ? $response->get_error_message() : 'HTTP ' . wp_remote_retrieve_response_code($response)
-        ];
-    }
-
-    $body = wp_remote_retrieve_body($response);
-    $lines = explode("\n", trim($body));
-    $domains = [];
-    foreach ($lines as $line) {
-        $d = strtolower(trim($line));
-        if ($d && $d[0] !== '#' && strpos($d, '.') !== false) {
-            $domains[] = $d;
-        }
-    }
-
-    if (count($domains) < 100) {
-        return ['success' => false, 'error' => 'Fetched list too small or invalid'];
-    }
-
-    $upload_dir = wp_upload_dir();
-    $dir = $upload_dir['basedir'] . '/fluentform-email-guard';
-    if (!file_exists($dir)) {
-        wp_mkdir_p($dir);
-    }
-    $file = $dir . '/disposable_domains.json';
-    file_put_contents($file, json_encode(array_values(array_unique($domains))));
-
-    return [
-        'success' => true,
-        'count' => count($domains),
-        'file' => $file
-    ];
 }
 
 function gm_ff_email_guard_check_typo($domain) {
@@ -201,13 +168,15 @@ function gm_ff_email_guard_log_block($email, $reason, $form_id = 0) {
     $masked_user = strlen($user) > 2 ? substr($user, 0, 1) . '***' . substr($user, -1) : '***';
     $masked_email = $masked_user . '@' . $domain;
 
+    $client_ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : 'unknown';
+
     $entry = [
         'time' => current_time('mysql'),
         'email' => $masked_email,
         'domain' => $domain,
         'reason' => $reason,
         'form_id' => (int)$form_id,
-        'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+        'ip' => $client_ip,
     ];
 
     array_unshift($logs, $entry);
@@ -399,19 +368,19 @@ add_action('admin_menu', function () {
  */
 function gm_ff_email_guard_render_admin_page() {
     if (!current_user_can('manage_options')) {
-        wp_die(__('You do not have permission to access this page.'));
+        wp_die(esc_html__('You do not have permission to access this page.', 'email-guard-for-fluent-forms'));
     }
 
     $message = '';
     $message_type = 'success';
 
     // Handle POST Actions
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['gm_ff_eg_action'])) {
+    if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['gm_ff_eg_action'])) {
         if (!check_admin_referer('gm_ff_eg_action_nonce', 'gm_ff_eg_nonce')) {
-            wp_die('Security check failed.');
+            wp_die(esc_html__('Security check failed.', 'email-guard-for-fluent-forms'));
         }
 
-        $action = sanitize_text_field($_POST['gm_ff_eg_action']);
+        $action = sanitize_text_field(wp_unslash($_POST['gm_ff_eg_action']));
 
         if ($action === 'save_settings') {
             $current_config = gm_ff_email_guard_get_config();
@@ -424,28 +393,20 @@ function gm_ff_email_guard_render_admin_page() {
             $current_config['checks']['role'] = !empty($_POST['gm_ff_eg_check_role']);
 
             // Blocked domains
-            $raw_blocked = sanitize_textarea_field($_POST['gm_ff_eg_blocked_domains'] ?? '');
+            $raw_blocked = isset($_POST['gm_ff_eg_blocked_domains']) ? sanitize_textarea_field(wp_unslash($_POST['gm_ff_eg_blocked_domains'])) : '';
             $blocked_lines = array_filter(array_map('trim', explode("\n", strtolower($raw_blocked))));
             $current_config['blocked_domains'] = array_values(array_unique($blocked_lines));
 
             // Whitelist
-            $raw_white = sanitize_textarea_field($_POST['gm_ff_eg_whitelist_domains'] ?? '');
+            $raw_white = isset($_POST['gm_ff_eg_whitelist_domains']) ? sanitize_textarea_field(wp_unslash($_POST['gm_ff_eg_whitelist_domains'])) : '';
             $white_lines = array_filter(array_map('trim', explode("\n", strtolower($raw_white))));
             $current_config['whitelist_domains'] = array_values(array_unique($white_lines));
 
             // TTL
-            $current_config['cache_ttl'] = max(300, (int)($_POST['gm_ff_eg_cache_ttl'] ?? 86400));
+            $current_config['cache_ttl'] = isset($_POST['gm_ff_eg_cache_ttl']) ? max(300, absint(wp_unslash($_POST['gm_ff_eg_cache_ttl']))) : 86400;
 
             gm_ff_email_guard_update_config($current_config);
             $message = 'Email Guard configuration successfully updated.';
-        } elseif ($action === 'sync_disposable') {
-            $res = gm_ff_email_guard_sync_disposable_list();
-            if (!empty($res['success'])) {
-                $message = sprintf('Successfully synced %d disposable domains from GitHub upstream!', (int)$res['count']);
-            } else {
-                $message = 'Sync failed: ' . esc_html($res['error'] ?? 'Unknown error');
-                $message_type = 'error';
-            }
         } elseif ($action === 'clear_logs') {
             update_option('fluentform_email_guard_logs', []);
             $message = 'Security audit telemetry logs cleared.';
@@ -455,9 +416,8 @@ function gm_ff_email_guard_render_admin_page() {
     $config = gm_ff_email_guard_get_config();
     $disposable_map = gm_ff_email_guard_get_disposable_domains();
     $logs = (array)get_option('fluentform_email_guard_logs', []);
-    $upload_dir = wp_upload_dir();
-    $cache_file = $upload_dir['basedir'] . '/fluentform-email-guard/disposable_domains.json';
-    $file_mtime = file_exists($cache_file) ? date('Y-m-d H:i:s T', filemtime($cache_file)) : 'Never';
+    $bundled_file = GM_FF_EMAIL_GUARD_PATH . 'data/disposable_domains.json';
+    $file_mtime = file_exists($bundled_file) ? gmdate('Y-m-d H:i:s T', filemtime($bundled_file)) : 'Bundled offline';
     ?>
     <div class="wrap">
         <h1 style="display:flex;align-items:center;gap:10px;">
@@ -488,7 +448,7 @@ function gm_ff_email_guard_render_admin_page() {
                 <div style="font-size:24px;font-weight:700;margin-top:6px;color:#1d2327;">
                     <?php echo number_format(count($disposable_map)); ?> <span style="font-size:14px;font-weight:400;color:#646970;">domains</span>
                 </div>
-                <div style="font-size:12px;color:#646970;margin-top:4px;">Last sync: <?php echo esc_html($file_mtime); ?></div>
+                <div style="font-size:12px;color:#646970;margin-top:4px;">Offline bundle: <?php echo esc_html($file_mtime); ?></div>
             </div>
 
             <div class="card" style="margin:0;flex:1;min-width:200px;padding:16px;border-left:4px solid #f0b849;">
@@ -592,18 +552,12 @@ function gm_ff_email_guard_render_admin_page() {
                     <p style="font-size:12px;margin:4px 0 0 0;"><strong>Updates:</strong> Managed automatically via WordPress Core</p>
                 </div>
 
-                <!-- Sync Box -->
+                <!-- Database Info Box -->
                 <div class="card" style="max-width:none;padding:20px;margin-bottom:20px;">
                     <h3>Disposable Domain Database</h3>
-                    <p style="font-size:13px;color:#646970;">Synchronizes with canonical <code>disposable-email-domains</code> upstream repository on GitHub.</p>
-                    <p style="font-size:12px;"><strong>Scheduled Sync:</strong> Weekly via WP-Cron</p>
-                    <form method="post" action="">
-                        <?php wp_nonce_field('gm_ff_eg_action_nonce', 'gm_ff_eg_nonce'); ?>
-                        <input type="hidden" name="gm_ff_eg_action" value="sync_disposable">
-                        <button type="submit" class="button button-secondary" style="width:100%;">
-                            <span class="dashicons dashicons-update" style="vertical-align:middle;"></span> Sync Latest List Now
-                        </button>
-                    </form>
+                    <p style="font-size:13px;color:#646970;">Protected by 8,700+ bundled temporary disposable domains from the canonical <code>disposable-email-domains</code> repository.</p>
+                    <p style="font-size:12px;margin:8px 0 0 0;"><strong>Operation Mode:</strong> 100% Offline &amp; In-Memory</p>
+                    <p style="font-size:12px;margin:4px 0 0 0;"><strong>Dataset File:</strong> <code>data/disposable_domains.json</code></p>
                 </div>
 
                 <!-- Interactive Email Tester Sandbox -->
@@ -626,9 +580,12 @@ function gm_ff_email_guard_render_admin_page() {
                         resBox.style.background = '#f0f0f1';
                         resBox.innerHTML = 'Testing...';
 
-                        fetch('/wp-json/fluentform-email-guard/v1/test', {
+                        fetch('<?php echo esc_url_raw(rest_url('fluentform-email-guard/v1/test')); ?>', {
                             method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-WP-Nonce': '<?php echo wp_create_nonce('wp_rest'); ?>'
+                            },
                             body: JSON.stringify({email: email})
                         })
                         .then(function(r){ return r.json(); })
@@ -711,7 +668,9 @@ add_action('rest_api_init', function () {
 
     $test_handler = [
         'methods' => 'POST',
-        'permission_callback' => '__return_true',
+        'permission_callback' => function () {
+            return current_user_can('manage_options');
+        },
         'callback' => function (\WP_REST_Request $request) {
             $email = sanitize_text_field($request->get_param('email'));
             $form_id = (int)$request->get_param('form_id');
@@ -723,15 +682,31 @@ add_action('rest_api_init', function () {
         }
     ];
 
-    $status_handler = [
+    $public_status_handler = [
         'methods' => 'GET',
         'permission_callback' => '__return_true',
+        'callback' => function () {
+            $config = gm_ff_email_guard_get_config();
+            return rest_ensure_response([
+                'status' => 'ok',
+                'enabled' => (bool)$config['enabled'],
+                'version' => GM_FF_EMAIL_GUARD_VERSION,
+            ]);
+        }
+    ];
+
+    $admin_status_handler = [
+        'methods' => 'GET',
+        'permission_callback' => function () {
+            return current_user_can('manage_options');
+        },
         'callback' => function () {
             $config = gm_ff_email_guard_get_config();
             $logs = get_option('fluentform_email_guard_logs', []);
             $disposable_map = gm_ff_email_guard_get_disposable_domains();
             return rest_ensure_response([
-                'enabled' => $config['enabled'],
+                'status' => 'ok',
+                'enabled' => (bool)$config['enabled'],
                 'version' => GM_FF_EMAIL_GUARD_VERSION,
                 'disposable_domains_count' => count($disposable_map),
                 'blocked_domains' => $config['blocked_domains'],
@@ -746,18 +721,12 @@ add_action('rest_api_init', function () {
     foreach ($namespaces as $ns) {
         register_rest_route($ns, '/test', $test_handler);
         register_rest_route($ns, '/email-guard/test', $test_handler);
-        register_rest_route($ns, '/status', $status_handler);
-        register_rest_route($ns, '/email-guard/status', $status_handler);
+        register_rest_route($ns, '/status', $public_status_handler);
+        register_rest_route($ns, '/email-guard/status', $public_status_handler);
+        register_rest_route($ns, '/admin/status', $admin_status_handler);
+        register_rest_route($ns, '/email-guard/admin/status', $admin_status_handler);
     }
 });
-
-/**
- * Weekly Background Refresh of Disposable Email Domains.
- */
-if (!wp_next_scheduled('gm_ff_email_guard_weekly_sync')) {
-    wp_schedule_event(time() + 3600, 'weekly', 'gm_ff_email_guard_weekly_sync');
-}
-add_action('gm_ff_email_guard_weekly_sync', 'gm_ff_email_guard_sync_disposable_list');
 
 register_deactivation_hook(__FILE__, function () {
     $timestamp = wp_next_scheduled('gm_ff_email_guard_weekly_sync');

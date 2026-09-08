@@ -133,4 +133,31 @@ meaningful state changes. Do not turn `VAULT.md` into a session diary.
   - Confirmation email received at `yanghxmail@gmail.com`.
   - Playground PCP Blueprint URL generated for instant WASM browser testing.
 
+## 2026-09-09 01:20 - WordPress.org Human Review Feedback & Plugin Check Scan Resolution (v1.1.4)
 
+- **Review Feedback Diagnosis & Audit**:
+  - Reviewer email received via `plugins@wordpress.org` (Thread ID: 721152) and automated Plugin Check (PCP) Playground scan (`email-guard-for-fluent-forms-fluentform-email-guard-php-20260908-180912.json`).
+  - Identified 4 structural points:
+    1. `PluginCheck.CodeAnalysis.Offloading.OffloadedContent`: Line 126 remote fetch of `disposable_email_blocklist.conf` from GitHub prohibited.
+    2. Input sanitization / escaping: Missing `wp_unslash()`, unvalidated `$_SERVER['REQUEST_METHOD']`, unescaped `wp_die(__('...'))`, non-`gmdate()` usage.
+    3. REST API security: Public unauthenticated access to `/test` and `/status` (leaking config, blocked domains, client IPs).
+    4. Metadata & Repository: Plugin URI returned 404 because repo was private; submitting user `hxsmyxh` missing from `Contributors` header.
+- **Implementation & Remediation**:
+  - Bumped version to `1.1.4` across `fluentform-email-guard.php`, `readme.txt`, and tests.
+  - Made GitHub repository `vecyang1/fluentform-email-guard` public via `gh repo edit --visibility public`.
+  - Added `hxsmyxh` to `readme.txt` Contributors (`Contributors: hxsmyxh, vecyang1`).
+  - Updated upstream license reference link to `https://github.com/disposable-email-domains/disposable-email-domains/blob/main/LICENSE.txt`.
+  - Removed remote syncing routine (`gm_ff_email_guard_sync_disposable_list`) and background cron scheduling (`gm_ff_email_guard_weekly_sync`, `wp_schedule_event`).
+  - Bundled full dataset of 8,742 disposable email domains offline in `data/disposable_domains.json` with zero external network footprint.
+  - Hardened input sanitization: Wrapped `$_SERVER['REMOTE_ADDR']`, `$_POST['gm_ff_eg_action']`, `$_POST['gm_ff_eg_blocked_domains']`, `$_POST['gm_ff_eg_whitelist_domains']`, and `$_POST['gm_ff_eg_cache_ttl']` with `wp_unslash()`, `absint()`, and `sanitize_text_field()` / `sanitize_textarea_field()`.
+  - Secured REST API:
+    - `/wp-json/fluentform-email-guard/v1/test` requires `current_user_can('manage_options')` and REST nonce (`X-WP-Nonce`).
+    - `/wp-json/fluentform-email-guard/v1/status` sanitized to minimal public health check (`status`, `enabled`, `version`).
+    - Added `/wp-json/fluentform-email-guard/v1/admin/status` with `current_user_can('manage_options')` for full diagnostics.
+  - Fixed escaping: `wp_die(esc_html__('You do not have permission to access this page.', 'email-guard-for-fluent-forms'))`.
+  - Replaced `date()` with `gmdate()`.
+- **Verification Evidence**:
+  - `php -l fluentform-email-guard.php`: 0 syntax errors.
+  - `python3 tests/test_email_guard_contract.py`: 10/10 contract tests passed.
+  - `wporg_preflight_check.mjs`: PASSED for source directory and packaged distribution zip.
+  - Built distribution package `email-guard-for-fluent-forms.zip` (62.6 KB) containing `LICENSE`, `fluentform-email-guard.php`, `readme.txt`, and `data/disposable_domains.json`.
