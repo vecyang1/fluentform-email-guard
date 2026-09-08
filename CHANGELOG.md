@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - **Plugin Check Compliance**: Added `wp_unslash()`, `absint()`, and array key validation to `$_SERVER['REMOTE_ADDR']`, `$_SERVER['REQUEST_METHOD']`, and `$_POST` inputs.
-- **I18n & Escaping**: Replaced unescaped `wp_die(__('...'))` with `wp_die(esc_html__('...', 'email-guard-for-fluent-forms'))`.
+- **I18n & Escaping**: Replaced unescaped `wp_die(__('...'))` with `wp_die(esc_html__('...', 'email-guard-for-fluent-forms'))`, escaped admin menu labels, settings links, badge counts, and JavaScript REST nonces with `esc_js()`.
 - **Timezone Safety**: Replaced PHP `date()` with `gmdate()`.
 
 ## [1.1.3] - 2026-09-07

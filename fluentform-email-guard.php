@@ -333,7 +333,7 @@ add_filter('fluentform/validate_input_item_input_email', function ($error, $fiel
  * Settings Link on Plugins Page.
  */
 add_filter('plugin_action_links_' . GM_FF_EMAIL_GUARD_BASENAME, function ($links) {
-    $settings_link = '<a href="' . admin_url('admin.php?page=fluentform-email-guard') . '">Settings</a>';
+    $settings_link = '<a href="' . esc_url(admin_url('admin.php?page=fluentform-email-guard')) . '">' . esc_html__('Settings', 'email-guard-for-fluent-forms') . '</a>';
     array_unshift($links, $settings_link);
     return $links;
 });
@@ -355,8 +355,8 @@ add_action('admin_menu', function () {
 
     add_submenu_page(
         $parent,
-        'Email Guard - Spam & Bounce Protection',
-        'Email Guard',
+        esc_html__('Email Guard - Spam & Bounce Protection', 'email-guard-for-fluent-forms'),
+        esc_html__('Email Guard', 'email-guard-for-fluent-forms'),
         'manage_options',
         'fluentform-email-guard',
         'gm_ff_email_guard_render_admin_page'
@@ -406,10 +406,10 @@ function gm_ff_email_guard_render_admin_page() {
             $current_config['cache_ttl'] = isset($_POST['gm_ff_eg_cache_ttl']) ? max(300, absint(wp_unslash($_POST['gm_ff_eg_cache_ttl']))) : 86400;
 
             gm_ff_email_guard_update_config($current_config);
-            $message = 'Email Guard configuration successfully updated.';
+            $message = esc_html__('Email Guard configuration successfully updated.', 'email-guard-for-fluent-forms');
         } elseif ($action === 'clear_logs') {
             update_option('fluentform_email_guard_logs', []);
-            $message = 'Security audit telemetry logs cleared.';
+            $message = esc_html__('Security audit telemetry logs cleared.', 'email-guard-for-fluent-forms');
         }
     }
 
@@ -438,7 +438,7 @@ function gm_ff_email_guard_render_admin_page() {
             <div class="card" style="margin:0;flex:1;min-width:200px;padding:16px;border-left:4px solid <?php echo $config['enabled'] ? '#00a32a' : '#d63638'; ?>;">
                 <div style="font-size:12px;color:#646970;text-transform:uppercase;font-weight:600;">Engine Status</div>
                 <div style="font-size:24px;font-weight:700;margin-top:6px;color:<?php echo $config['enabled'] ? '#00a32a' : '#d63638'; ?>;">
-                    <?php echo $config['enabled'] ? '● ACTIVE' : '○ DISABLED'; ?>
+                    <?php echo $config['enabled'] ? esc_html__('● ACTIVE', 'email-guard-for-fluent-forms') : esc_html__('○ DISABLED', 'email-guard-for-fluent-forms'); ?>
                 </div>
                 <div style="font-size:12px;color:#646970;margin-top:4px;">Hooked on <code>fluentform/validate</code></div>
             </div>
@@ -446,7 +446,7 @@ function gm_ff_email_guard_render_admin_page() {
             <div class="card" style="margin:0;flex:1;min-width:200px;padding:16px;border-left:4px solid #2271b1;">
                 <div style="font-size:12px;color:#646970;text-transform:uppercase;font-weight:600;">Disposable Blacklist</div>
                 <div style="font-size:24px;font-weight:700;margin-top:6px;color:#1d2327;">
-                    <?php echo number_format(count($disposable_map)); ?> <span style="font-size:14px;font-weight:400;color:#646970;">domains</span>
+                    <?php echo esc_html(number_format(count($disposable_map))); ?> <span style="font-size:14px;font-weight:400;color:#646970;"><?php esc_html_e('domains', 'email-guard-for-fluent-forms'); ?></span>
                 </div>
                 <div style="font-size:12px;color:#646970;margin-top:4px;">Offline bundle: <?php echo esc_html($file_mtime); ?></div>
             </div>
@@ -454,7 +454,7 @@ function gm_ff_email_guard_render_admin_page() {
             <div class="card" style="margin:0;flex:1;min-width:200px;padding:16px;border-left:4px solid #f0b849;">
                 <div style="font-size:12px;color:#646970;text-transform:uppercase;font-weight:600;">Blocked Attempts</div>
                 <div style="font-size:24px;font-weight:700;margin-top:6px;color:#1d2327;">
-                    <?php echo number_format(count($logs)); ?> <span style="font-size:14px;font-weight:400;color:#646970;">events</span>
+                    <?php echo esc_html(number_format(count($logs))); ?> <span style="font-size:14px;font-weight:400;color:#646970;"><?php esc_html_e('events', 'email-guard-for-fluent-forms'); ?></span>
                 </div>
                 <div style="font-size:12px;color:#646970;margin-top:4px;">Prevented hard bounces</div>
             </div>
@@ -584,7 +584,7 @@ function gm_ff_email_guard_render_admin_page() {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-WP-Nonce': '<?php echo wp_create_nonce('wp_rest'); ?>'
+                                'X-WP-Nonce': '<?php echo esc_js(wp_create_nonce('wp_rest')); ?>'
                             },
                             body: JSON.stringify({email: email})
                         })
@@ -619,7 +619,7 @@ function gm_ff_email_guard_render_admin_page() {
         <div class="card" style="max-width:none;padding:20px;margin-top:24px;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
                 <h2 style="margin:0;">Recent Blocked Telemetry Audit (Last 50 Entries)</h2>
-                <form method="post" action="" onsubmit="return confirm('Clear all audit logs?');">
+                <form method="post" action="" onsubmit="return confirm('<?php echo esc_js(esc_html__('Clear all audit logs?', 'email-guard-for-fluent-forms')); ?>');">
                     <?php wp_nonce_field('gm_ff_eg_action_nonce', 'gm_ff_eg_nonce'); ?>
                     <input type="hidden" name="gm_ff_eg_action" value="clear_logs">
                     <button type="submit" class="button button-link-delete">Clear Audit Logs</button>

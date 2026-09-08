@@ -161,3 +161,21 @@ meaningful state changes. Do not turn `VAULT.md` into a session diary.
   - `python3 tests/test_email_guard_contract.py`: 10/10 contract tests passed.
   - `wporg_preflight_check.mjs`: PASSED for source directory and packaged distribution zip.
   - Built distribution package `email-guard-for-fluent-forms.zip` (62.6 KB) containing `LICENSE`, `fluentform-email-guard.php`, `readme.txt`, and `data/disposable_domains.json`.
+
+## 2026-09-09 01:25 - Round 2 Review & Hardening: DNS Verification & Admin Escaping
+
+- **Domain Ownership Verification (Reviewer Blocker Resolved)**:
+  - Reviewer flagged that submitting user `hxsmyxh` (`yanghxmail@gmail.com`) was not proven to own `worldinspirelab.com` / `World Inspire LLC`.
+  - Used `cloudflare-dns-manager` to add DNS TXT record to root `@` (`worldinspirelab.com`):
+    - Record: `wordpressorg-hxsmyxh-verification` (Zone ID `0bf97b3b9d0066125df8bf3ce76196bc`).
+    - Verified live resolution across global resolvers (`1.1.1.1`, `8.8.8.8`, and `harlee.ns.cloudflare.com`).
+- **Comprehensive Admin UI Escaping & Internationalization**:
+  - Secured JavaScript nonce injection in admin settings test sandbox with `esc_js(wp_create_nonce('wp_rest'))`.
+  - Wrapped dynamic counts with `esc_html(number_format(...))`.
+  - Internationalized and escaped menu labels and settings links: `esc_html__('Settings', 'email-guard-for-fluent-forms')`, `esc_html__('Email Guard - Spam & Bounce Protection', ...)`.
+  - Internationalized and escaped badge statuses: `esc_html__('● ACTIVE', ...)` and `esc_html__('○ DISABLED', ...)`.
+  - Escaped JS confirm dialog string: `esc_js(esc_html__('Clear all audit logs?', ...))`.
+- **Packaging & Test Suite Hardening**:
+  - Re-packaged `email-guard-for-fluent-forms.zip` with hardened PHP file.
+  - Expanded `tests/test_email_guard_contract.py` with assertions for `esc_js(wp_create_nonce('wp_rest'))`, translatable labels, and admin escaping.
+  - All 10/10 contract tests pass in 0.086s. Preflight check passes cleanly.

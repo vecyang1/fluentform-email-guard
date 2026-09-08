@@ -26,11 +26,11 @@
 | T-015 | completed | 2026-09-07 | 2026-09-07 | Review queue monitoring & automated watchdog alert | Agent | None | `wporg_queue_watchdog.py` built & verified; exit code 2 (pending) and exit code 0 (approved) tested |
 | T-016 | waiting | 2026-09-07 | 2026-09-09 | WordPress.org review queue clearance & SVN credentials | Vec + Agent | Reply to reviewer email from `plugins@wordpress.org` with updated v1.1.4 zip | Automated Scan: PASS. Review feedback addressed in v1.1.4 |
 | T-017 | completed | 2026-09-07 | 2026-09-07 | Resolve WordPress.org automated scanner check failures | Agent | None | Purged updater hooks (Guideline #7), updated Tested up to 7.1, slug-matched textdomain, uploaded zip passed scanner cleanly |
-| T-018 | completed | 2026-09-09 | 2026-09-09 | Resolve WordPress.org Review Feedback & Plugin Check Scan (v1.1.4) | Agent | None | Fixed 7 scanner errors, secured REST endpoints, bundled 8,742 domains offline, 10/10 contract tests pass |
+| T-018 | completed | 2026-09-09 | 2026-09-09 | Resolve WordPress.org Review Feedback & Plugin Check Scan (v1.1.4) | Agent | None | Fixed 7 scanner errors, secured REST endpoints, bundled 8,742 domains offline, added DNS TXT verification, 10/10 contract tests pass |
 
 ## Backlog
 
-- [ ] **Submit v1.1.4 Reply**: Reply to `plugins@wordpress.org` (Thread ID: 721152) attaching `email-guard-for-fluent-forms.zip` and confirming repo visibility, offline dataset bundling, and REST security.
+- [ ] **Submit v1.1.4 Reply**: Reply to `plugins@wordpress.org` (Thread ID: 721152) attaching `email-guard-for-fluent-forms.zip`, confirming DNS TXT verification on `worldinspirelab.com`, repo visibility, offline dataset bundling, and REST security.
 - [ ] **Configure SVN Credentials & Release**: Upon review approval email from `plugins@wordpress.org`, add `SVN_USERNAME` and `SVN_PASSWORD` to GitHub Secrets, then push tag `v1.1.4` to trigger 10up SVN deploy.
 
 
