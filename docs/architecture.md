@@ -55,9 +55,9 @@ flowchart TD
 | Module / Area | Owns | Reads | Writes | Public Contract | Source Paths |
 |---|---|---|---|---|---|
 | **Validation Engine** | Real-time email inspection, scoring, and rejection messages | `wp_options` (`fluentform_email_guard_config`), Transients | Transients (`ff_mx_*`), Audit logs | `fluentform/validate_input_item_input_email` | `fluentform-email-guard.php:gm_ff_email_guard_check` |
-| **Disposable Domain Sync** | 8,700+ domain list synchronization | GitHub upstream list (`disposable_email_blocklist.conf`) | `uploads/fluentform-email-guard/disposable_domains.json` | `gm_ff_email_guard_sync_disposable_list()` | `fluentform-email-guard.php:126` |
-| **Admin UI & Sandbox** | Fluent Forms submenu settings page, interactive email tester, block audit table | `wp_options`, Uploads dir | `wp_options` | `/wp-admin/admin.php?page=fluentform-email-guard` | `fluentform-email-guard.php:gm_ff_email_guard_render_admin_page` |
-| **REST API** | Health status check and diagnostic test API | Plugin config, logs | None | `/wp-json/fluentform-email-guard/v1/status`, `/test` | `fluentform-email-guard.php:736` |
+| **Disposable Domain Engine** | 8,742 bundled domain list + custom rules | `data/disposable_domains.json`, `uploads/fluentform-email-guard/` | None (read-only bundled asset) | `gm_ff_email_guard_get_disposable_domains()` | `fluentform-email-guard.php` |
+| **Admin UI & Sandbox** | Fluent Forms submenu settings page, interactive email tester, block audit table | `wp_options`, Bundled data | `wp_options` | `/wp-admin/admin.php?page=fluentform-email-guard` | `fluentform-email-guard.php:gm_ff_email_guard_render_admin_page` |
+| **REST API** | Minimal health status check and authenticated test/diagnostics | Plugin config, logs | None | `/wp-json/fluentform-email-guard/v1/status` (public minimal), `/test`, `/admin/status` (manage_options) | `fluentform-email-guard.php` |
 | **GitHub Auto-Updater** | Native 1-click updates from private repository | GitHub Releases API, personal access token | `update_plugins` transient | WordPress `Plugin_Upgrader` hooks | `fluentform-email-guard.php:798` |
 
 ---
@@ -69,7 +69,8 @@ flowchart TD
 | `wp_options` (`fluentform_email_guard_config`) | Settings | `enabled`, `checks`, `blocked_domains`, `whitelist_domains`, `typo_domains`, `github_token` | Admin UI, MCP | Validator, Updater | Yes | Default config seeded on first load |
 | `wp_options` (`fluentform_email_guard_logs`) | Audit trail | Last 100 blocked emails, reasons, timestamps, form IDs, IPs | Validator | Admin UI, REST API | Yes | Auto-trimmed to 100 rows |
 | `wp_options` Transients (`ff_mx_<hash>`) | DNS MX cache | Domain MX status (true/false) | MX Validator | MX Validator | Derived | 24-hour TTL |
-| Uploads JSON (`disposable_domains.json`) | Upstream blocklist | 8,700+ raw domain strings | WP-Cron weekly sync | Validator | Derived | Fast O(1) `array_flip` in-memory lookup |
+| Bundled JSON (`data/disposable_domains.json`) | Upstream blocklist | 8,742 raw domain strings | Bundled distribution asset | Validator | Canonical | Fast O(1) `array_flip` in-memory lookup |
+| Uploads JSON (`disposable_domains.json`) | Custom / override blocklist | Domain strings | Optional admin override | Validator | Derived | Merged with bundled dataset if present |
 
 ---
 
