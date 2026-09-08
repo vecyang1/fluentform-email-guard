@@ -55,6 +55,7 @@ owner:
 | Path | Owns | Example |
 | --- | --- | --- |
 | `assets/` | Official WordPress.org discovery assets (banners, icons, screenshots) | `assets/banner-772x250.png`, `assets/icon-256x256.png` |
+| `data/` | Offline bundled datasets for zero-network compliance | `data/disposable_domains.json` |
 | `.github/workflows/` | CI/CD automation (release packaging, PHP matrix tests, WP.org SVN deploy) | `.github/workflows/wporg-deploy.yml`, `.github/workflows/ci-release.yml` |
 | `tests/` | Two-sided contract, security, and lifecycle test suites | `tests/test_email_guard_contract.py` |
 | `docs/` | Durable PRDs, API contracts, architecture notes | `docs/prd_price_alerts.md`, `docs/API.md` |
