@@ -117,6 +117,9 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
         self.assertIn("absint(wp_unslash($_POST['gm_ff_eg_cache_ttl']))", self.content)
         self.assertIn("esc_html__('You do not have permission to access this page.', 'email-guard-for-fluent-forms')", self.content)
         self.assertIn("gmdate(", self.content)
+        self.assertIn("esc_js(wp_create_nonce('wp_rest'))", self.content)
+        self.assertIn("esc_html__('Settings', 'email-guard-for-fluent-forms')", self.content)
+        self.assertIn("esc_html__('● ACTIVE', 'email-guard-for-fluent-forms')", self.content)
 
 
 if __name__ == "__main__":
