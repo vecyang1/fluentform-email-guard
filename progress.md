@@ -179,3 +179,19 @@ meaningful state changes. Do not turn `VAULT.md` into a session diary.
   - Re-packaged `email-guard-for-fluent-forms.zip` with hardened PHP file.
   - Expanded `tests/test_email_guard_contract.py` with assertions for `esc_js(wp_create_nonce('wp_rest'))`, translatable labels, and admin escaping.
   - All 10/10 contract tests pass in 0.086s. Preflight check passes cleanly.
+
+## 2026-09-09 03:30 - Plugin Check (PCP) Playground Gate Standardization & Zero-Error Live Evidence
+
+- **WordPress Playground Plugin Check (PCP) Gate Standardization**:
+  - Built canonical gate tool: `skills/wp-plugin-development/scripts/wporg_playground_gate.mjs`.
+  - Implemented 3-Tier Verification Architecture:
+    - Tier 1: Cloud WebAssembly Playground Blueprint Gate (zero local download, runs in-browser `@php-wasm/web`).
+    - Tier 2: CI/CD Pipeline Gate (`wordpress/plugin-check-action@v1`).
+    - Tier 3: Local Static Preflight Gate (`wporg_preflight_check.mjs`).
+  - Standardized tool integration into `skills/wp-plugin-development/SKILL.md` and `references/wporg-directory-publishing.md`.
+- **Real Page Verification Evidence (对答案)**:
+  - Generated declarative Playground Blueprint URL mounting `plugin-check` and `email-guard-for-fluent-forms.zip` (v1.1.4 release).
+  - Executed automated browser flow via `chrome-devtools` (`pageId: 36`).
+  - Automated selection of `email-guard-for-fluent-forms` and triggered audit across all categories (`general`, `plugin_repo`, `security`, `performance`, `accessibility`) and severities (`error`, `warning`).
+  - **Authoritative Result**: `Checks complete. No errors found.` (0 errors, 100% green pass on official WordPress review engine).
+  - Visual evidence captured: `file:///Users/vecsatfoxmailcom/.gemini/antigravity/brain/4e240b19-1037-476c-ae21-57821e434d74/.system_generated/steps/283/media_0.png`.
