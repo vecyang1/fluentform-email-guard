@@ -565,7 +565,7 @@ function gm_ff_email_guard_render_admin_page() {
                     <h3>Test an Email Address</h3>
                     <p style="font-size:13px;color:#646970;">Simulate real-time FluentForms email guard evaluation instantly.</p>
                     <div style="margin-bottom:12px;">
-                        <input type="email" id="gm_ff_eg_test_email" placeholder="e.g. test@mailinator.com" style="width:100%;margin-bottom:8px;">
+                        <input type="email" id="gm_ff_eg_test_email" placeholder="e.g. test@example.com" style="width:100%;margin-bottom:8px;">
                         <button type="button" id="gm_ff_eg_btn_test" class="button button-primary" style="width:100%;">
                             <span class="dashicons dashicons-search" style="vertical-align:middle;"></span> Run Validation Test
                         </button>

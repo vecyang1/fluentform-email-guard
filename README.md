@@ -114,7 +114,7 @@ GET /wp-json/fluentform-email-guard/v1/status
 POST /wp-json/fluentform-email-guard/v1/test
 Content-Type: application/json
 
-{"email": "someone@tempmail.com"}
+{"email": "someone@invalid.test"}
 ```
 **Response:**
 ```json
