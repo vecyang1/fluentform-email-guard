@@ -1,6 +1,6 @@
-# Fluent Forms Email Guard & Anti-Bounce (`fluentform-email-guard`)
+# World Inspire Email Validation for Fluent Forms (`world-inspire-email-validation-for-fluent-forms`)
 
-> Production-grade multi-layer real-time email defense, disposable domain filtration, live DNS MX verification, and auto-update distribution system for WordPress & Fluent Forms.
+> Production-grade multi-layer real-time email defense, disposable domain filtration, live DNS MX verification, and typo correction for WordPress & Fluent Forms.
 
 [![CI & Release](https://github.com/vecyang1/fluentform-email-guard/actions/workflows/ci-release.yml/badge.svg)](https://github.com/vecyang1/fluentform-email-guard/actions/workflows/ci-release.yml)
 [![License: GPL-2.0-or-later](https://img.shields.io/badge/License-GPL--2.0--or--later-blue.svg)](LICENSE)
@@ -13,7 +13,7 @@
 
 When running marketing campaigns, lead funnels, and automated CRM onboarding sequences (e.g. FluentCRM, MailPoet, Sendinblue/Brevo), invalid email addresses, throwaway mailboxes, and typos cause catastrophic bounce rates. Hard bounces permanently ruin domain sender reputation, land marketing emails into spam folders, and trigger transactional rate-limiting.
 
-`fluentform-email-guard` hooks directly into the core validation layer of Fluent Forms (`fluentform/validate_input_item_input_email`) to reject invalid, disposable, unroutable, and bounce-inducing emails *at form submission time*, before the entry is recorded or forwarded to marketing automations.
+`world-inspire-email-validation-for-fluent-forms` hooks directly into the core validation layer of Fluent Forms (`fluentform/validate_input_item_input_email`) to reject invalid, disposable, unroutable, and bounce-inducing emails *at form submission time*, before the entry is recorded or forwarded to marketing automations.
 
 ```mermaid
 flowchart TD
@@ -50,7 +50,7 @@ flowchart TD
 ## 3. WordPress Admin Dashboard
 
 The settings and audit page is registered at:
-**WordPress Admin > Fluent Forms > Email Guard** (URL: `/wp-admin/admin.php?page=fluentform-email-guard`)
+**WordPress Admin > Fluent Forms > Email Validation** (URL: `/wp-admin/admin.php?page=fluentform-email-guard`)
 
 ### Key Features:
 - **Interactive Live Sandbox**: Test any email in real-time with instant JSON diagnostic inspection before enabling rules globally.

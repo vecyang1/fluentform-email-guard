@@ -3,6 +3,8 @@
 .github/
 .gitignore
 .distignore
+*.zip
+assets/
 
 # Testing & build tooling
 tests/

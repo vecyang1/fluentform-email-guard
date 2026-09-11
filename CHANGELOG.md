@@ -5,6 +5,14 @@ All notable changes to the "Email Guard for Fluent Forms" plugin will be documen
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.5] - 2026-09-11
+
+### Changed
+- **Distinctive Name & Slug Compliance**: Renamed plugin to `World Inspire Email Validation for Fluent Forms` with slug and Text Domain `world-inspire-email-validation-for-fluent-forms` per WordPress.org Plugin Directory review feedback. Anchors category "Email Validation" with verified entity brand prefix "World Inspire".
+- **File Renaming**: Main plugin file renamed to `world-inspire-email-validation-for-fluent-forms.php` matching canonical WordPress slug conventions.
+- **Internationalization**: Updated Text Domain to `world-inspire-email-validation-for-fluent-forms` across all translatable strings.
+- **Packaging & Tooling**: Packaged release zip using standardized `skills/wp-plugin-development/scripts/wporg_package.mjs` with root directory `world-inspire-email-validation-for-fluent-forms/`.
+
 ## [1.1.4] - 2026-09-09
 
 ### Added
