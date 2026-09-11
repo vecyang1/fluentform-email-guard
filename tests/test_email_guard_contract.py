@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-PLUGIN_FILE = REPO_ROOT / "fluentform-email-guard.php"
+PLUGIN_FILE = REPO_ROOT / "world-inspire-email-validation-for-fluent-forms.php"
 
 
 class TestFluentFormEmailGuardContract(unittest.TestCase):
@@ -26,10 +26,10 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
 
     def test_plugin_headers(self):
         headers = [
-            "Plugin Name: Email Guard for Fluent Forms",
-            "Version: 1.1.4",
+            "Plugin Name: World Inspire Email Validation for Fluent Forms",
+            "Version: 1.1.5",
             "License: GPL-2.0-or-later",
-            "Text Domain: email-guard-for-fluent-forms",
+            "Text Domain: world-inspire-email-validation-for-fluent-forms",
         ]
         for h in headers:
             with self.subTest(header=h):
@@ -66,15 +66,15 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
         readme_path = REPO_ROOT / "readme.txt"
         self.assertTrue(readme_path.is_file(), "readme.txt must exist")
         readme_txt = readme_path.read_text(encoding="utf-8")
-        self.assertIn("=== Email Guard for Fluent Forms ===", readme_txt)
+        self.assertIn("=== World Inspire Email Validation for Fluent Forms ===", readme_txt)
         self.assertIn("Contributors: hxsmyxh, vecyang1", readme_txt)
         self.assertIn("Tested up to: 7.1", readme_txt)
-        self.assertIn("Stable tag: 1.1.4", readme_txt)
+        self.assertIn("Stable tag: 1.1.5", readme_txt)
         self.assertIn("== Description ==", readme_txt)
         self.assertIn("== External Services ==", readme_txt)
         self.assertIn("== Installation ==", readme_txt)
         self.assertIn("== Changelog ==", readme_txt)
-        self.assertIn("= 1.1.4 =", readme_txt)
+        self.assertIn("= 1.1.5 =", readme_txt)
         self.assertIn("https://github.com/disposable-email-domains/disposable-email-domains/blob/main/LICENSE.txt", readme_txt)
 
         distignore_path = REPO_ROOT / ".distignore"
@@ -115,11 +115,11 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
         self.assertIn("wp_unslash($_SERVER['REMOTE_ADDR'])", self.content)
         self.assertIn("wp_unslash($_POST['gm_ff_eg_action'])", self.content)
         self.assertIn("absint(wp_unslash($_POST['gm_ff_eg_cache_ttl']))", self.content)
-        self.assertIn("esc_html__('You do not have permission to access this page.', 'email-guard-for-fluent-forms')", self.content)
+        self.assertIn("esc_html__('You do not have permission to access this page.', 'world-inspire-email-validation-for-fluent-forms')", self.content)
         self.assertIn("gmdate(", self.content)
         self.assertIn("esc_js(wp_create_nonce('wp_rest'))", self.content)
-        self.assertIn("esc_html__('Settings', 'email-guard-for-fluent-forms')", self.content)
-        self.assertIn("esc_html__('● ACTIVE', 'email-guard-for-fluent-forms')", self.content)
+        self.assertIn("esc_html__('Settings', 'world-inspire-email-validation-for-fluent-forms')", self.content)
+        self.assertIn("esc_html__('● ACTIVE', 'world-inspire-email-validation-for-fluent-forms')", self.content)
 
 
 if __name__ == "__main__":

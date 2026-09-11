@@ -1,11 +1,11 @@
-=== Email Guard for Fluent Forms ===
+=== World Inspire Email Validation for Fluent Forms ===
 Contributors: hxsmyxh, vecyang1
 Donate link: https://worldinspirelab.com/
 Tags: fluent-forms, email-validation, anti-spam, bounce-prevention, disposable-email
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.1.4
+Stable tag: 1.1.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -15,7 +15,7 @@ Production-grade multi-layer real-time email defense, disposable domain filtrati
 
 When running marketing funnels, lead generation campaigns, or automated email onboarding sequences (e.g. FluentCRM, MailPoet, Brevo), invalid email addresses, throwaway mailboxes, and common user typos cause catastrophic bounce rates. Hard bounces permanently damage your domain sender reputation, land marketing broadcasts into spam folders, and trigger transactional rate-limiting from email service providers.
 
-**Email Guard for Fluent Forms** hooks directly into Fluent Forms' core input validation layer (`fluentform/validate_input_item_input_email`) to intercept invalid, disposable, unroutable, and bounce-inducing emails *at form submission time*, before the entry is recorded or forwarded to marketing automations.
+**World Inspire Email Validation for Fluent Forms** hooks directly into Fluent Forms' core input validation layer (`fluentform/validate_input_item_input_email`) to intercept invalid, disposable, unroutable, and bounce-inducing emails *at form submission time*, before the entry is recorded or forwarded to marketing automations.
 
 ### 6-Layer Real-Time Defense Engine
 
@@ -36,14 +36,14 @@ When running marketing funnels, lead generation campaigns, or automated email on
 
 == Installation ==
 
-1. Upload the plugin files to `/wp-content/plugins/email-guard-for-fluent-forms`, or install directly through the WordPress plugins screen.
+1. Upload the plugin files to `/wp-content/plugins/world-inspire-email-validation-for-fluent-forms`, or install directly through the WordPress plugins screen.
 2. Activate the plugin through the **Plugins** screen in WordPress.
-3. Navigate to **Fluent Forms > Email Guard** to configure defense rules and test addresses in the live sandbox.
+3. Navigate to **Fluent Forms > Email Validation** to configure defense rules and test addresses in the live sandbox.
 
 == Frequently Asked Questions ==
 
 = Does this require Fluent Forms Pro? =
-No, Email Guard for Fluent Forms works seamlessly with both the Free and Pro editions of Fluent Forms.
+No, World Inspire Email Validation for Fluent Forms works seamlessly with both the Free and Pro editions of Fluent Forms.
 
 = Does it slow down form submissions? =
 No. Syntax, blacklist, typo, and disposable checks execute in memory (<0.5ms). DNS MX checks are cached for 24 hours via WordPress Transients so repeat queries have zero latency.
@@ -69,6 +69,10 @@ This plugin includes an offline bundled dataset of disposable email domains deri
 3. Audit table showing recent blocked attempts with timestamps and reasons.
 
 == Changelog ==
+
+= 1.1.5 =
+* Compliance: Renamed plugin to "World Inspire Email Validation for Fluent Forms" with distinctive brand prefix and slug "world-inspire-email-validation-for-fluent-forms" per WordPress.org review requirements.
+* Internationalization: Updated text domain to "world-inspire-email-validation-for-fluent-forms" across all translatable strings.
 
 = 1.1.4 =
 * Security: Restricted REST `/test` endpoint to administrators with `manage_options` capability and nonce verification.

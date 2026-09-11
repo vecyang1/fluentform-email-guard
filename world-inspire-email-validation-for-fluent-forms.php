@@ -1,20 +1,20 @@
 <?php
 /**
- * Plugin Name: Email Guard for Fluent Forms
+ * Plugin Name: World Inspire Email Validation for Fluent Forms
  * Plugin URI: https://github.com/vecyang1/fluentform-email-guard
  * Description: Production-grade multi-layer real-time email defense for Fluent Forms. Blocks disposable/temporary domains (8,700+ domains), verifies live DNS MX records with 24h caching, auto-suggests typo corrections (e.g. gamil.com -> gmail.com), and prevents hard bounces in FluentCRM funnels.
- * Version: 1.1.4
+ * Version: 1.1.5
  * Author: World Inspire LLC, Vec
  * Author URI: https://worldinspirelab.com/
  * License: GPL-2.0-or-later
- * Text Domain: email-guard-for-fluent-forms
+ * Text Domain: world-inspire-email-validation-for-fluent-forms
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-define('GM_FF_EMAIL_GUARD_VERSION', '1.1.4');
+define('GM_FF_EMAIL_GUARD_VERSION', '1.1.5');
 define('GM_FF_EMAIL_GUARD_FILE', __FILE__);
 define('GM_FF_EMAIL_GUARD_BASENAME', plugin_basename(__FILE__));
 define('GM_FF_EMAIL_GUARD_PATH', plugin_dir_path(__FILE__));
@@ -333,7 +333,7 @@ add_filter('fluentform/validate_input_item_input_email', function ($error, $fiel
  * Settings Link on Plugins Page.
  */
 add_filter('plugin_action_links_' . GM_FF_EMAIL_GUARD_BASENAME, function ($links) {
-    $settings_link = '<a href="' . esc_url(admin_url('admin.php?page=fluentform-email-guard')) . '">' . esc_html__('Settings', 'email-guard-for-fluent-forms') . '</a>';
+    $settings_link = '<a href="' . esc_url(admin_url('admin.php?page=fluentform-email-guard')) . '">' . esc_html__('Settings', 'world-inspire-email-validation-for-fluent-forms') . '</a>';
     array_unshift($links, $settings_link);
     return $links;
 });
@@ -355,8 +355,8 @@ add_action('admin_menu', function () {
 
     add_submenu_page(
         $parent,
-        esc_html__('Email Guard - Spam & Bounce Protection', 'email-guard-for-fluent-forms'),
-        esc_html__('Email Guard', 'email-guard-for-fluent-forms'),
+        esc_html__('World Inspire Email Validation for Fluent Forms', 'world-inspire-email-validation-for-fluent-forms'),
+        esc_html__('Email Validation', 'world-inspire-email-validation-for-fluent-forms'),
         'manage_options',
         'fluentform-email-guard',
         'gm_ff_email_guard_render_admin_page'
@@ -368,7 +368,7 @@ add_action('admin_menu', function () {
  */
 function gm_ff_email_guard_render_admin_page() {
     if (!current_user_can('manage_options')) {
-        wp_die(esc_html__('You do not have permission to access this page.', 'email-guard-for-fluent-forms'));
+        wp_die(esc_html__('You do not have permission to access this page.', 'world-inspire-email-validation-for-fluent-forms'));
     }
 
     $message = '';
@@ -377,7 +377,7 @@ function gm_ff_email_guard_render_admin_page() {
     // Handle POST Actions
     if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['gm_ff_eg_action'])) {
         if (!check_admin_referer('gm_ff_eg_action_nonce', 'gm_ff_eg_nonce')) {
-            wp_die(esc_html__('Security check failed.', 'email-guard-for-fluent-forms'));
+            wp_die(esc_html__('Security check failed.', 'world-inspire-email-validation-for-fluent-forms'));
         }
 
         $action = sanitize_text_field(wp_unslash($_POST['gm_ff_eg_action']));
@@ -406,10 +406,10 @@ function gm_ff_email_guard_render_admin_page() {
             $current_config['cache_ttl'] = isset($_POST['gm_ff_eg_cache_ttl']) ? max(300, absint(wp_unslash($_POST['gm_ff_eg_cache_ttl']))) : 86400;
 
             gm_ff_email_guard_update_config($current_config);
-            $message = esc_html__('Email Guard configuration successfully updated.', 'email-guard-for-fluent-forms');
+            $message = esc_html__('World Inspire Email Validation configuration successfully updated.', 'world-inspire-email-validation-for-fluent-forms');
         } elseif ($action === 'clear_logs') {
             update_option('fluentform_email_guard_logs', []);
-            $message = esc_html__('Security audit telemetry logs cleared.', 'email-guard-for-fluent-forms');
+            $message = esc_html__('Security audit telemetry logs cleared.', 'world-inspire-email-validation-for-fluent-forms');
         }
     }
 
@@ -422,7 +422,7 @@ function gm_ff_email_guard_render_admin_page() {
     <div class="wrap">
         <h1 style="display:flex;align-items:center;gap:10px;">
             <span class="dashicons dashicons-shield-alt" style="font-size:32px;width:32px;height:32px;color:#2271b1;"></span>
-            Fluent Forms Email Guard & Anti-Bounce
+            World Inspire Email Validation for Fluent Forms
             <span style="font-size:12px;background:#2271b1;color:#fff;padding:2px 8px;border-radius:12px;">v<?php echo esc_html(GM_FF_EMAIL_GUARD_VERSION); ?></span>
         </h1>
         <p class="description">Production-grade defense against disposable emails, non-existent MX domains, domain typos, and bounce-inducing submissions. Zero Ghost Logic & Single Source of Truth.</p>
@@ -438,7 +438,7 @@ function gm_ff_email_guard_render_admin_page() {
             <div class="card" style="margin:0;flex:1;min-width:200px;padding:16px;border-left:4px solid <?php echo $config['enabled'] ? '#00a32a' : '#d63638'; ?>;">
                 <div style="font-size:12px;color:#646970;text-transform:uppercase;font-weight:600;">Engine Status</div>
                 <div style="font-size:24px;font-weight:700;margin-top:6px;color:<?php echo $config['enabled'] ? '#00a32a' : '#d63638'; ?>;">
-                    <?php echo $config['enabled'] ? esc_html__('● ACTIVE', 'email-guard-for-fluent-forms') : esc_html__('○ DISABLED', 'email-guard-for-fluent-forms'); ?>
+                    <?php echo $config['enabled'] ? esc_html__('● ACTIVE', 'world-inspire-email-validation-for-fluent-forms') : esc_html__('○ DISABLED', 'world-inspire-email-validation-for-fluent-forms'); ?>
                 </div>
                 <div style="font-size:12px;color:#646970;margin-top:4px;">Hooked on <code>fluentform/validate</code></div>
             </div>
@@ -446,7 +446,7 @@ function gm_ff_email_guard_render_admin_page() {
             <div class="card" style="margin:0;flex:1;min-width:200px;padding:16px;border-left:4px solid #2271b1;">
                 <div style="font-size:12px;color:#646970;text-transform:uppercase;font-weight:600;">Disposable Blacklist</div>
                 <div style="font-size:24px;font-weight:700;margin-top:6px;color:#1d2327;">
-                    <?php echo esc_html(number_format(count($disposable_map))); ?> <span style="font-size:14px;font-weight:400;color:#646970;"><?php esc_html_e('domains', 'email-guard-for-fluent-forms'); ?></span>
+                    <?php echo esc_html(number_format(count($disposable_map))); ?> <span style="font-size:14px;font-weight:400;color:#646970;"><?php esc_html_e('domains', 'world-inspire-email-validation-for-fluent-forms'); ?></span>
                 </div>
                 <div style="font-size:12px;color:#646970;margin-top:4px;">Offline bundle: <?php echo esc_html($file_mtime); ?></div>
             </div>
@@ -454,7 +454,7 @@ function gm_ff_email_guard_render_admin_page() {
             <div class="card" style="margin:0;flex:1;min-width:200px;padding:16px;border-left:4px solid #f0b849;">
                 <div style="font-size:12px;color:#646970;text-transform:uppercase;font-weight:600;">Blocked Attempts</div>
                 <div style="font-size:24px;font-weight:700;margin-top:6px;color:#1d2327;">
-                    <?php echo esc_html(number_format(count($logs))); ?> <span style="font-size:14px;font-weight:400;color:#646970;"><?php esc_html_e('events', 'email-guard-for-fluent-forms'); ?></span>
+                    <?php echo esc_html(number_format(count($logs))); ?> <span style="font-size:14px;font-weight:400;color:#646970;"><?php esc_html_e('events', 'world-inspire-email-validation-for-fluent-forms'); ?></span>
                 </div>
                 <div style="font-size:12px;color:#646970;margin-top:4px;">Prevented hard bounces</div>
             </div>
@@ -476,7 +476,7 @@ function gm_ff_email_guard_render_admin_page() {
                                 <td>
                                     <label>
                                         <input type="checkbox" name="gm_ff_eg_enabled" value="1" <?php checked($config['enabled']); ?>>
-                                        <strong>Enable Email Guard Protection</strong>
+                                        <strong>Enable Email Validation Protection</strong>
                                     </label>
                                     <p class="description">When disabled, submissions pass through without email domain verification.</p>
                                 </td>
@@ -619,7 +619,7 @@ function gm_ff_email_guard_render_admin_page() {
         <div class="card" style="max-width:none;padding:20px;margin-top:24px;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
                 <h2 style="margin:0;">Recent Blocked Telemetry Audit (Last 50 Entries)</h2>
-                <form method="post" action="" onsubmit="return confirm('<?php echo esc_js(esc_html__('Clear all audit logs?', 'email-guard-for-fluent-forms')); ?>');">
+                <form method="post" action="" onsubmit="return confirm('<?php echo esc_js(esc_html__('Clear all audit logs?', 'world-inspire-email-validation-for-fluent-forms')); ?>');">
                     <?php wp_nonce_field('gm_ff_eg_action_nonce', 'gm_ff_eg_nonce'); ?>
                     <input type="hidden" name="gm_ff_eg_action" value="clear_logs">
                     <button type="submit" class="button button-link-delete">Clear Audit Logs</button>
