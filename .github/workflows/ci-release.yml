@@ -31,7 +31,7 @@ jobs:
           python-version: '3.11'
 
       - name: Run PHP Syntax Check
-        run: php -l fluentform-email-guard.php
+        run: php -l world-inspire-email-validation-for-fluent-forms.php
 
       - name: Run Contract Tests
         run: python3 -m unittest tests/test_email_guard_contract.py
@@ -50,19 +50,21 @@ jobs:
 
       - name: Package WordPress Plugin Zip
         run: |
-          mkdir -p build/fluentform-email-guard
-          cp fluentform-email-guard.php build/fluentform-email-guard/
-          cp README.md build/fluentform-email-guard/
-          cp LICENSE build/fluentform-email-guard/
+          mkdir -p build/world-inspire-email-validation-for-fluent-forms
+          cp world-inspire-email-validation-for-fluent-forms.php build/world-inspire-email-validation-for-fluent-forms/
+          cp -r data build/world-inspire-email-validation-for-fluent-forms/
+          cp readme.txt build/world-inspire-email-validation-for-fluent-forms/
+          cp README.md build/world-inspire-email-validation-for-fluent-forms/
+          cp LICENSE build/world-inspire-email-validation-for-fluent-forms/
           cd build
-          zip -r ../fluentform-email-guard.zip fluentform-email-guard
+          zip -r ../world-inspire-email-validation-for-fluent-forms.zip world-inspire-email-validation-for-fluent-forms
           cd ..
-          ls -la fluentform-email-guard.zip
+          ls -la world-inspire-email-validation-for-fluent-forms.zip
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: fluentform-email-guard.zip
+          files: world-inspire-email-validation-for-fluent-forms.zip
           generate_release_notes: true
           draft: false
           prerelease: false
