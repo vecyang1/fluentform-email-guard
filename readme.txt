@@ -65,8 +65,6 @@ This plugin includes an offline bundled dataset of disposable email domains deri
 == Screenshots ==
 
 1. Admin Dashboard with Live Interactive Sandbox and Granular Defense Toggles.
-2. Form submission inline rejection notice when a temporary email is submitted.
-3. Audit table showing recent blocked attempts with timestamps and reasons.
 
 == Changelog ==
 
