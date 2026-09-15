@@ -5,6 +5,21 @@ All notable changes to the "Email Guard for Fluent Forms" plugin will be documen
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-09-15] - 2026-09-15
+
+### Fixed
+- **Fleet Migration to Official Directory Slug**: Migrated live estate sites (`worldinspirelab.com`, `xinchaovi.com`, `belovedpals.com`, `hi.carradiocodes.co.uk`, `vectory44.sg-host.com`) from interim folder `email-guard-for-fluent-forms` to official WordPress.org package `world-inspire-email-validation-for-fluent-forms` (v1.1.5).
+- **Ghost Deactivation Notice Resolution**: Removed legacy plugin references and orphan folders causing WordPress core `validate_active_plugins()` deactivation warnings when viewing plugins list.
+- **Auto-Updates**: Enabled WordPress core auto-updates for the canonical directory plugin across the estate.
+
+## [2026-09-12] - 2026-09-12
+
+### Fixes
+- Configure approved wporg slug, assets dir, and CI packaging (`1c5b23d`)
+
+### Documentation
+- Record WordPress.org SVN release lane and revision 3692788 (`7dd5b88`)
+
 ## [1.1.5] - 2026-09-11
 
 ### Changed
