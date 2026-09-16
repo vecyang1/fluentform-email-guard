@@ -5,6 +5,15 @@ All notable changes to the "Email Guard for Fluent Forms" plugin will be documen
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-09-16
+
+### Added
+- **Multi-Form Defense Suite**: Upgraded plugin to natively protect forms beyond Fluent Forms, including **WPForms**, **Contact Form 7**, **Gravity Forms**, **Forminator**, **Ninja Forms**, **WooCommerce** (Checkout billing email and account registration), and **WordPress Core User Registration**.
+- **Dynamic Integration Detection & Notification Banner**: Auto-detects active form engines on the site at runtime and renders an intuitive notification banner and statistics badge in the wp-admin settings screen.
+- **Granular Integration Toggles**: Added dedicated "Form Integrations" management card allowing administrators to independently enable/disable protection for each detected form plugin.
+- **Universal Developer API**: Exposed `world_inspire_verify_email` WordPress filter and `world_inspire_is_valid_email($email)` helper function for custom forms, external endpoints, and theme integrations.
+- **REST Status Metadata**: Exposes detected engines and per-integration states in authenticated `/wp-json/fluentform-email-guard/v1/admin/status` endpoint.
+
 ## [2026-09-15] - 2026-09-15
 
 ### Fixed

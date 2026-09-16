@@ -2,8 +2,8 @@
 /**
  * Plugin Name: World Inspire Email Validation for Fluent Forms
  * Plugin URI: https://github.com/vecyang1/fluentform-email-guard
- * Description: Production-grade multi-layer real-time email defense for Fluent Forms. Blocks disposable/temporary domains (8,700+ domains), verifies live DNS MX records with 24h caching, auto-suggests typo corrections (e.g. gamil.com -> gmail.com), and prevents hard bounces in FluentCRM funnels.
- * Version: 1.1.5
+ * Description: Production-grade multi-layer real-time email defense for Fluent Forms and WordPress forms (WPForms, CF7, Gravity Forms, Forminator, Ninja Forms, WooCommerce, WP Registration). Blocks disposable/temporary domains (8,700+ domains), verifies live DNS MX records with 24h caching, auto-suggests typo corrections (e.g. gamil.com -> gmail.com), and prevents hard bounces.
+ * Version: 1.2.0
  * Author: World Inspire LLC, Vec
  * Author URI: https://worldinspirelab.com/
  * License: GPL-2.0-or-later
@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('GM_FF_EMAIL_GUARD_VERSION', '1.1.5');
+define('GM_FF_EMAIL_GUARD_VERSION', '1.2.0');
 define('GM_FF_EMAIL_GUARD_FILE', __FILE__);
 define('GM_FF_EMAIL_GUARD_BASENAME', plugin_basename(__FILE__));
 define('GM_FF_EMAIL_GUARD_PATH', plugin_dir_path(__FILE__));
@@ -27,6 +27,16 @@ function gm_ff_email_guard_default_config() {
     return [
         'enabled' => true,
         'version' => GM_FF_EMAIL_GUARD_VERSION,
+        'integrations' => [
+            'fluentform'   => true,
+            'wpforms'      => true,
+            'wpcf7'        => true,
+            'gravityforms' => true,
+            'forminator'   => true,
+            'ninja_forms'  => true,
+            'woocommerce'  => true,
+            'wp_register'  => true,
+        ],
         'checks' => [
             'syntax' => true,
             'mx' => true,
@@ -77,15 +87,85 @@ function gm_ff_email_guard_default_config() {
 
 function gm_ff_email_guard_get_config() {
     $config = get_option('fluentform_email_guard_config');
+    $default = gm_ff_email_guard_default_config();
     if (!is_array($config)) {
-        $config = gm_ff_email_guard_default_config();
+        $config = $default;
         update_option('fluentform_email_guard_config', $config);
+        return $config;
     }
-    return wp_parse_args($config, gm_ff_email_guard_default_config());
+    $merged = wp_parse_args($config, $default);
+    if (!isset($merged['integrations']) || !is_array($merged['integrations'])) {
+        $merged['integrations'] = $default['integrations'];
+    } else {
+        $merged['integrations'] = wp_parse_args($merged['integrations'], $default['integrations']);
+    }
+    if (!isset($merged['checks']) || !is_array($merged['checks'])) {
+        $merged['checks'] = $default['checks'];
+    } else {
+        $merged['checks'] = wp_parse_args($merged['checks'], $default['checks']);
+    }
+    return $merged;
 }
 
 function gm_ff_email_guard_update_config($new_config) {
     return update_option('fluentform_email_guard_config', $new_config);
+}
+
+/**
+ * Supported integrations and runtime dynamic detection.
+ * Derived at runtime to prevent state desynchronization (SSOT).
+ */
+function gm_ff_email_guard_get_supported_integrations() {
+    return [
+        'fluentform' => [
+            'label'     => __('Fluent Forms', 'world-inspire-email-validation-for-fluent-forms'),
+            'is_active' => defined('FLUENTFORM') || function_exists('wpFluentForm'),
+            'desc'      => __('Protects Fluent Forms standard and custom email fields.', 'world-inspire-email-validation-for-fluent-forms'),
+            'badge'     => 'Fluent Forms',
+        ],
+        'wpforms' => [
+            'label'     => __('WPForms', 'world-inspire-email-validation-for-fluent-forms'),
+            'is_active' => function_exists('wpforms') || class_exists('WPForms'),
+            'desc'      => __('Protects WPForms standard and conversational email fields.', 'world-inspire-email-validation-for-fluent-forms'),
+            'badge'     => 'WPForms',
+        ],
+        'wpcf7' => [
+            'label'     => __('Contact Form 7', 'world-inspire-email-validation-for-fluent-forms'),
+            'is_active' => defined('WPCF7_VERSION') || class_exists('WPCF7'),
+            'desc'      => __('Protects Contact Form 7 [email] and [email*] tags.', 'world-inspire-email-validation-for-fluent-forms'),
+            'badge'     => 'CF7',
+        ],
+        'gravityforms' => [
+            'label'     => __('Gravity Forms', 'world-inspire-email-validation-for-fluent-forms'),
+            'is_active' => class_exists('GFForms') || class_exists('RGForms'),
+            'desc'      => __('Protects Gravity Forms email fields across all forms.', 'world-inspire-email-validation-for-fluent-forms'),
+            'badge'     => 'Gravity Forms',
+        ],
+        'forminator' => [
+            'label'     => __('Forminator', 'world-inspire-email-validation-for-fluent-forms'),
+            'is_active' => class_exists('Forminator') || defined('FORMINATOR_VERSION'),
+            'desc'      => __('Protects Forminator form submission email inputs.', 'world-inspire-email-validation-for-fluent-forms'),
+            'badge'     => 'Forminator',
+        ],
+        'ninja_forms' => [
+            'label'     => __('Ninja Forms', 'world-inspire-email-validation-for-fluent-forms'),
+            'is_active' => class_exists('Ninja_Forms') || function_exists('Ninja_Forms'),
+            'desc'      => __('Protects Ninja Forms email fields.', 'world-inspire-email-validation-for-fluent-forms'),
+            'badge'     => 'Ninja Forms',
+        ],
+        'woocommerce' => [
+            'label'     => __('WooCommerce', 'world-inspire-email-validation-for-fluent-forms'),
+            'is_active' => class_exists('WooCommerce') || function_exists('WC'),
+            'desc'      => __('Protects WooCommerce checkout billing email and customer registration.', 'world-inspire-email-validation-for-fluent-forms'),
+            'badge'     => 'WooCommerce',
+        ],
+        'wp_register' => [
+            'label'     => __('WordPress Core Registration', 'world-inspire-email-validation-for-fluent-forms'),
+            'is_active' => (bool)get_option('users_can_register', 0),
+            'desc'      => __('Intercepts disposable and malformed emails during native WordPress registration.', 'world-inspire-email-validation-for-fluent-forms'),
+            'badge'     => 'WP Core',
+        ],
+    ];
 }
 
 function gm_ff_email_guard_builtin_disposable_domains() {
@@ -296,10 +376,18 @@ function gm_ff_email_guard_check($email, $form_id = 0) {
 }
 
 /**
- * Hook into Fluent Forms email validation filter.
+ * -------------------------------------------------------------------------
+ * Multi-Form & Registration Integrations Layer
+ * -------------------------------------------------------------------------
  */
+
+// 1. Fluent Forms
 add_filter('fluentform/validate_input_item_input_email', function ($error, $field, $formData, $fields, $form) {
     if (!empty($error)) {
+        return $error;
+    }
+    $config = gm_ff_email_guard_get_config();
+    if (empty($config['enabled']) || empty($config['integrations']['fluentform'])) {
         return $error;
     }
 
@@ -328,6 +416,215 @@ add_filter('fluentform/validate_input_item_input_email', function ($error, $fiel
 
     return $error;
 }, 20, 5);
+
+// 2. WPForms
+add_action('wpforms_process_validate_email', function ($field_id, $field_submit, $form_data) {
+    $config = gm_ff_email_guard_get_config();
+    if (empty($config['enabled']) || empty($config['integrations']['wpforms'])) {
+        return;
+    }
+
+    $email = is_array($field_submit) ? ($field_submit['primary'] ?? ($field_submit[0] ?? '')) : (string)$field_submit;
+    $email = trim($email);
+    if ($email === '') {
+        return;
+    }
+
+    $form_id = is_array($form_data) && isset($form_data['id']) ? (int)$form_data['id'] : 0;
+    $result = gm_ff_email_guard_check($email, $form_id);
+
+    if (!$result['valid']) {
+        if (function_exists('wpforms') && isset(wpforms()->process)) {
+            wpforms()->process->errors[$form_id][$field_id] = $result['error'];
+        }
+    }
+}, 10, 3);
+
+// 3. Contact Form 7
+$gm_ff_wpcf7_validator = function ($result, $tag) {
+    $config = gm_ff_email_guard_get_config();
+    if (empty($config['enabled']) || empty($config['integrations']['wpcf7'])) {
+        return $result;
+    }
+
+    $name = is_object($tag) ? ($tag->name ?? '') : (is_array($tag) ? ($tag['name'] ?? '') : '');
+    if (!$name) {
+        return $result;
+    }
+
+    $email = isset($_POST[$name]) ? trim(sanitize_text_field(wp_unslash($_POST[$name]))) : '';
+    if ($email === '') {
+        return $result;
+    }
+
+    $check = gm_ff_email_guard_check($email, 'cf7');
+    if (!$check['valid']) {
+        if (is_object($result) && method_exists($result, 'invalidate')) {
+            $result->invalidate($tag, $check['error']);
+        }
+    }
+    return $result;
+};
+add_filter('wpcf7_validate_email', $gm_ff_wpcf7_validator, 20, 2);
+add_filter('wpcf7_validate_email*', $gm_ff_wpcf7_validator, 20, 2);
+
+// 4. Gravity Forms
+add_filter('gform_field_validation', function ($result, $value, $form, $field) {
+    if (!is_array($result) || empty($result['is_valid'])) {
+        return $result;
+    }
+    $config = gm_ff_email_guard_get_config();
+    if (empty($config['enabled']) || empty($config['integrations']['gravityforms'])) {
+        return $result;
+    }
+
+    $field_type = is_object($field) ? ($field->type ?? '') : (is_array($field) ? ($field['type'] ?? '') : '');
+    if ($field_type !== 'email') {
+        return $result;
+    }
+
+    $email = is_array($value) ? ($value[0] ?? '') : (string)$value;
+    $email = trim($email);
+    if ($email === '') {
+        return $result;
+    }
+
+    $form_id = is_array($form) ? (int)($form['id'] ?? 0) : (is_object($form) ? (int)($form->id ?? 0) : 0);
+    $check = gm_ff_email_guard_check($email, $form_id);
+    if (!$check['valid']) {
+        $result['is_valid'] = false;
+        $result['message'] = $check['error'];
+    }
+    return $result;
+}, 10, 4);
+
+// 5. Forminator
+add_filter('forminator_custom_form_submit_errors', function ($submit_errors, $form_id, $field_data_array) {
+    $config = gm_ff_email_guard_get_config();
+    if (empty($config['enabled']) || empty($config['integrations']['forminator'])) {
+        return $submit_errors;
+    }
+    if (!is_array($field_data_array)) {
+        return $submit_errors;
+    }
+
+    foreach ($field_data_array as $field) {
+        $name = is_array($field) ? ($field['name'] ?? '') : '';
+        $val = is_array($field) ? trim((string)($field['value'] ?? '')) : '';
+        if ($val === '') {
+            continue;
+        }
+
+        if (strpos($name, 'email') !== false) {
+            $check = gm_ff_email_guard_check($val, (int)$form_id);
+            if (!$check['valid']) {
+                if (!is_array($submit_errors)) {
+                    $submit_errors = [];
+                }
+                $submit_errors[][$name] = $check['error'];
+            }
+        }
+    }
+    return $submit_errors;
+}, 10, 3);
+
+// 6. Ninja Forms
+add_filter('ninja_forms_submit_data', function ($form_data) {
+    $config = gm_ff_email_guard_get_config();
+    if (empty($config['enabled']) || empty($config['integrations']['ninja_forms'])) {
+        return $form_data;
+    }
+    if (!isset($form_data['fields']) || !is_array($form_data['fields'])) {
+        return $form_data;
+    }
+
+    $form_id = (int)($form_data['id'] ?? 0);
+    foreach ($form_data['fields'] as $key => $field) {
+        $type = $field['type'] ?? ($field['settings']['type'] ?? '');
+        if ($type === 'email') {
+            $val = trim((string)($field['value'] ?? ''));
+            if ($val === '') {
+                continue;
+            }
+            $check = gm_ff_email_guard_check($val, $form_id);
+            if (!$check['valid']) {
+                $field_id = $field['id'] ?? $key;
+                $form_data['errors']['fields'][$field_id] = $check['error'];
+            }
+        }
+    }
+    return $form_data;
+}, 10, 1);
+
+// 7. WooCommerce (Checkout & Registration)
+add_action('woocommerce_checkout_process', function () {
+    $config = gm_ff_email_guard_get_config();
+    if (empty($config['enabled']) || empty($config['integrations']['woocommerce'])) {
+        return;
+    }
+
+    $email = isset($_POST['billing_email']) ? trim(sanitize_email(wp_unslash($_POST['billing_email']))) : '';
+    if ($email === '') {
+        return;
+    }
+
+    $check = gm_ff_email_guard_check($email, 'wc_checkout');
+    if (!$check['valid']) {
+        if (function_exists('wc_add_notice')) {
+            wc_add_notice($check['error'], 'error');
+        }
+    }
+});
+
+add_action('woocommerce_register_post', function ($username, $email, $validation_errors) {
+    $config = gm_ff_email_guard_get_config();
+    if (empty($config['enabled']) || empty($config['integrations']['woocommerce'])) {
+        return;
+    }
+
+    $email = trim((string)$email);
+    if ($email === '') {
+        return;
+    }
+
+    $check = gm_ff_email_guard_check($email, 'wc_register');
+    if (!$check['valid'] && is_object($validation_errors) && method_exists($validation_errors, 'add')) {
+        $validation_errors->add('billing_email_error', $check['error']);
+    }
+}, 10, 3);
+
+// 8. WordPress Core Registration
+add_filter('registration_errors', function ($errors, $sanitized_user_login, $user_email) {
+    $config = gm_ff_email_guard_get_config();
+    if (empty($config['enabled']) || empty($config['integrations']['wp_register'])) {
+        return $errors;
+    }
+
+    $email = trim((string)$user_email);
+    if ($email === '') {
+        return $errors;
+    }
+
+    $check = gm_ff_email_guard_check($email, 'wp_register');
+    if (!$check['valid']) {
+        if (is_object($errors) && method_exists($errors, 'add')) {
+            $errors->add('invalid_email_guard', $check['error']);
+        }
+    }
+    return $errors;
+}, 10, 3);
+
+// 9. Universal Developer API
+add_filter('world_inspire_verify_email', function ($result, $email, $context = 0) {
+    return gm_ff_email_guard_check($email, $context);
+}, 10, 3);
+
+if (!function_exists('world_inspire_is_valid_email')) {
+    function world_inspire_is_valid_email($email, $context = 0) {
+        $check = gm_ff_email_guard_check($email, $context);
+        return !empty($check['valid']);
+    }
+}
 
 /**
  * Settings Link on Plugins Page.
@@ -392,6 +689,12 @@ function gm_ff_email_guard_render_admin_page() {
             $current_config['checks']['blocked_domains'] = !empty($_POST['gm_ff_eg_check_blocked_domains']);
             $current_config['checks']['role'] = !empty($_POST['gm_ff_eg_check_role']);
 
+            // Save Form Integrations
+            $supported_integrations = gm_ff_email_guard_get_supported_integrations();
+            foreach (array_keys($supported_integrations) as $int_key) {
+                $current_config['integrations'][$int_key] = !empty($_POST['gm_ff_eg_integration_' . $int_key]);
+            }
+
             // Blocked domains
             $raw_blocked = isset($_POST['gm_ff_eg_blocked_domains']) ? sanitize_textarea_field(wp_unslash($_POST['gm_ff_eg_blocked_domains'])) : '';
             $blocked_lines = array_filter(array_map('trim', explode("\n", strtolower($raw_blocked))));
@@ -415,6 +718,8 @@ function gm_ff_email_guard_render_admin_page() {
 
     $config = gm_ff_email_guard_get_config();
     $disposable_map = gm_ff_email_guard_get_disposable_domains();
+    $supported_integrations = gm_ff_email_guard_get_supported_integrations();
+    $detected_active = array_filter($supported_integrations, function($item) { return !empty($item['is_active']); });
     $logs = (array)get_option('fluentform_email_guard_logs', []);
     $bundled_file = GM_FF_EMAIL_GUARD_PATH . 'data/disposable_domains.json';
     $file_mtime = file_exists($bundled_file) ? gmdate('Y-m-d H:i:s T', filemtime($bundled_file)) : 'Bundled offline';
@@ -433,17 +738,41 @@ function gm_ff_email_guard_render_admin_page() {
             </div>
         <?php endif; ?>
 
+        <?php if (!empty($detected_active)): 
+            $active_labels = wp_list_pluck($detected_active, 'label');
+        ?>
+            <!-- Multi-Form Detection Notice Banner -->
+            <div class="notice notice-info" style="border-left-color:#2271b1;padding:12px 16px;margin:16px 0;">
+                <p style="font-size:13px;margin:0 0 4px 0;">
+                    <span class="dashicons dashicons-shield-alt" style="color:#2271b1;vertical-align:text-bottom;margin-right:4px;"></span>
+                    <strong><?php esc_html_e('Multi-Form Auto-Defense Active:', 'world-inspire-email-validation-for-fluent-forms'); ?></strong>
+                    <?php printf(esc_html__('Detected %d active form / account engine(s) on this site: %s.', 'world-inspire-email-validation-for-fluent-forms'), count($detected_active), '<strong>' . esc_html(implode(', ', $active_labels)) . '</strong>'); ?>
+                </p>
+                <p style="font-size:12px;color:#50575e;margin:0;">
+                    <?php esc_html_e('Submissions from all detected forms are automatically guarded against disposable mailboxes, syntax defects, and domain typos. You can toggle specific engines in the Integrations panel below.', 'world-inspire-email-validation-for-fluent-forms'); ?>
+                </p>
+            </div>
+        <?php endif; ?>
+
         <!-- Stat Badges -->
         <div style="display:flex;gap:16px;margin:20px 0;flex-wrap:wrap;">
-            <div class="card" style="margin:0;flex:1;min-width:200px;padding:16px;border-left:4px solid <?php echo $config['enabled'] ? '#00a32a' : '#d63638'; ?>;">
+            <div class="card" style="margin:0;flex:1;min-width:180px;padding:16px;border-left:4px solid <?php echo $config['enabled'] ? '#00a32a' : '#d63638'; ?>;">
                 <div style="font-size:12px;color:#646970;text-transform:uppercase;font-weight:600;">Engine Status</div>
                 <div style="font-size:24px;font-weight:700;margin-top:6px;color:<?php echo $config['enabled'] ? '#00a32a' : '#d63638'; ?>;">
                     <?php echo $config['enabled'] ? esc_html__('● ACTIVE', 'world-inspire-email-validation-for-fluent-forms') : esc_html__('○ DISABLED', 'world-inspire-email-validation-for-fluent-forms'); ?>
                 </div>
-                <div style="font-size:12px;color:#646970;margin-top:4px;">Hooked on <code>fluentform/validate</code></div>
+                <div style="font-size:12px;color:#646970;margin-top:4px;">Multi-layer email filter</div>
             </div>
 
-            <div class="card" style="margin:0;flex:1;min-width:200px;padding:16px;border-left:4px solid #2271b1;">
+            <div class="card" style="margin:0;flex:1;min-width:180px;padding:16px;border-left:4px solid #135e96;">
+                <div style="font-size:12px;color:#646970;text-transform:uppercase;font-weight:600;">Form Integrations</div>
+                <div style="font-size:24px;font-weight:700;margin-top:6px;color:#1d2327;">
+                    <?php echo esc_html(count($detected_active)); ?> <span style="font-size:14px;font-weight:400;color:#646970;">/ <?php echo esc_html(count($supported_integrations)); ?> Active</span>
+                </div>
+                <div style="font-size:12px;color:#646970;margin-top:4px;">Universal multi-form defense</div>
+            </div>
+
+            <div class="card" style="margin:0;flex:1;min-width:180px;padding:16px;border-left:4px solid #2271b1;">
                 <div style="font-size:12px;color:#646970;text-transform:uppercase;font-weight:600;">Disposable Blacklist</div>
                 <div style="font-size:24px;font-weight:700;margin-top:6px;color:#1d2327;">
                     <?php echo esc_html(number_format(count($disposable_map))); ?> <span style="font-size:14px;font-weight:400;color:#646970;"><?php esc_html_e('domains', 'world-inspire-email-validation-for-fluent-forms'); ?></span>
@@ -451,7 +780,7 @@ function gm_ff_email_guard_render_admin_page() {
                 <div style="font-size:12px;color:#646970;margin-top:4px;">Offline bundle: <?php echo esc_html($file_mtime); ?></div>
             </div>
 
-            <div class="card" style="margin:0;flex:1;min-width:200px;padding:16px;border-left:4px solid #f0b849;">
+            <div class="card" style="margin:0;flex:1;min-width:180px;padding:16px;border-left:4px solid #f0b849;">
                 <div style="font-size:12px;color:#646970;text-transform:uppercase;font-weight:600;">Blocked Attempts</div>
                 <div style="font-size:24px;font-weight:700;margin-top:6px;color:#1d2327;">
                     <?php echo esc_html(number_format(count($logs))); ?> <span style="font-size:14px;font-weight:400;color:#646970;"><?php esc_html_e('events', 'world-inspire-email-validation-for-fluent-forms'); ?></span>
@@ -510,6 +839,48 @@ function gm_ff_email_guard_render_admin_page() {
                                             <strong>Role-Based Account Filter</strong> (Blocks admin@, support@, info@)
                                         </label>
                                     </fieldset>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Form Integrations</th>
+                                <td>
+                                    <p class="description" style="margin-top:0;margin-bottom:10px;">Toggle email validation protection per form plugin or WordPress core registration. Detected engines on your site are automatically safeguarded.</p>
+                                    <div style="border:1px solid #c3c4c7;border-radius:4px;overflow:hidden;background:#fff;max-width:750px;">
+                                        <table class="widefat striped" style="border:none;margin:0;">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:40px;text-align:center;">Active</th>
+                                                    <th style="width:160px;">Engine</th>
+                                                    <th style="width:120px;">Detection</th>
+                                                    <th>Protection Scope</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($supported_integrations as $int_key => $int_data): 
+                                                    $is_enabled = !empty($config['integrations'][$int_key]);
+                                                ?>
+                                                <tr>
+                                                    <td style="text-align:center;vertical-align:middle;">
+                                                        <input type="checkbox" name="gm_ff_eg_integration_<?php echo esc_attr($int_key); ?>" value="1" <?php checked($is_enabled); ?>>
+                                                    </td>
+                                                    <td style="vertical-align:middle;"><strong><?php echo esc_html($int_data['label']); ?></strong></td>
+                                                    <td style="vertical-align:middle;">
+                                                        <?php if (!empty($int_data['is_active'])): ?>
+                                                            <span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;background:#d4edda;color:#155724;">
+                                                                ● DETECTED
+                                                            </span>
+                                                        <?php else: ?>
+                                                            <span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500;background:#f0f0f1;color:#646970;">
+                                                                ○ Standby
+                                                            </span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                    <td style="font-size:12px;color:#50575e;vertical-align:middle;"><?php echo esc_html($int_data['desc']); ?></td>
+                                                </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </td>
                             </tr>
                             <tr>
@@ -704,6 +1075,7 @@ add_action('rest_api_init', function () {
             $config = gm_ff_email_guard_get_config();
             $logs = get_option('fluentform_email_guard_logs', []);
             $disposable_map = gm_ff_email_guard_get_disposable_domains();
+            $supported_integrations = gm_ff_email_guard_get_supported_integrations();
             return rest_ensure_response([
                 'status' => 'ok',
                 'enabled' => (bool)$config['enabled'],
@@ -712,6 +1084,8 @@ add_action('rest_api_init', function () {
                 'blocked_domains' => $config['blocked_domains'],
                 'target_forms' => $config['target_forms'],
                 'checks' => $config['checks'],
+                'integrations' => $config['integrations'],
+                'supported_integrations' => $supported_integrations,
                 'recent_blocked_logs' => array_slice((array)$logs, 0, 10),
                 'total_recent_blocks' => count((array)$logs)
             ]);

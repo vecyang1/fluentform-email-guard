@@ -1,6 +1,6 @@
 # World Inspire Email Validation for Fluent Forms (`world-inspire-email-validation-for-fluent-forms`)
 
-> Production-grade multi-layer real-time email defense, disposable domain filtration, live DNS MX verification, and typo correction for WordPress & Fluent Forms.
+> Production-grade multi-layer real-time email defense, disposable domain filtration, live DNS MX verification, and typo correction for Fluent Forms and WordPress form ecosystems.
 
 [![CI & Release](https://github.com/vecyang1/fluentform-email-guard/actions/workflows/ci-release.yml/badge.svg)](https://github.com/vecyang1/fluentform-email-guard/actions/workflows/ci-release.yml)
 [![License: GPL-2.0-or-later](https://img.shields.io/badge/License-GPL--2.0--or--later-blue.svg)](LICENSE)
@@ -13,11 +13,22 @@
 
 When running marketing campaigns, lead funnels, and automated CRM onboarding sequences (e.g. FluentCRM, MailPoet, Sendinblue/Brevo), invalid email addresses, throwaway mailboxes, and typos cause catastrophic bounce rates. Hard bounces permanently ruin domain sender reputation, land marketing emails into spam folders, and trigger transactional rate-limiting.
 
-`world-inspire-email-validation-for-fluent-forms` hooks directly into the core validation layer of Fluent Forms (`fluentform/validate_input_item_input_email`) to reject invalid, disposable, unroutable, and bounce-inducing emails *at form submission time*, before the entry is recorded or forwarded to marketing automations.
+`world-inspire-email-validation-for-fluent-forms` delivers a decoupled 6-layer defense engine with universal multi-form integration. It auto-detects active form engines on your WordPress site and intercepts invalid, disposable, unroutable, and bounce-inducing emails *at submission time*, before entries are saved or forwarded.
+
+### Supported Integrations
+* **Fluent Forms**: `fluentform/validate_input_item_input_email`
+* **WPForms**: `wpforms_process_validate_email`
+* **Contact Form 7**: `wpcf7_validate_email` and `wpcf7_validate_email*`
+* **Gravity Forms**: `gform_field_validation`
+* **Forminator**: `forminator_custom_form_submit_errors`
+* **Ninja Forms**: `ninja_forms_submit_data`
+* **WooCommerce**: Checkout billing email (`woocommerce_checkout_process`) & account registration (`woocommerce_register_post`)
+* **WordPress Core Registration**: `registration_errors`
+* **Universal Developer API**: `apply_filters('world_inspire_verify_email', ...)` and `world_inspire_is_valid_email($email)`
 
 ```mermaid
 flowchart TD
-    User([User submits form]) --> L1{Layer 1: Syntax}
+    User([User submits form or registers]) --> L1{Layer 1: Syntax}
     L1 -- Invalid --> Err1[Reject: Invalid format]
     L1 -- Valid --> L2{Layer 2: Domain Blacklist}
     L2 -- Blocked --> Err2[Reject: Blocked domain]
@@ -29,7 +40,7 @@ flowchart TD
     L5 -- No MX / NXDOMAIN --> Err5[Reject: Domain cannot receive mail]
     L5 -- Has Valid MX --> L6{Layer 6: Role Account}
     L6 -- Blocked role --> Err6[Reject: Role email not allowed]
-    L6 -- Passed --> Save([Entry accepted & passed to FluentCRM])
+    L6 -- Passed --> Save([Entry accepted & passed to marketing pipeline])
 ```
 
 ---

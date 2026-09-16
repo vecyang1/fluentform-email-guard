@@ -27,7 +27,7 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
     def test_plugin_headers(self):
         headers = [
             "Plugin Name: World Inspire Email Validation for Fluent Forms",
-            "Version: 1.1.5",
+            "Version: 1.2.0",
             "License: GPL-2.0-or-later",
             "Text Domain: world-inspire-email-validation-for-fluent-forms",
         ]
@@ -49,12 +49,31 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
             with self.subTest(forbidden=s):
                 self.assertNotIn(s, self.content, f"Forbidden updater symbol '{s}' must not exist in plugin")
 
-    def test_fluent_forms_validation_hook(self):
-        self.assertIn(
+    def test_multi_form_integration_hooks(self):
+        """Ensure all 8 multi-form and account registration hooks are registered."""
+        hooks = [
             "add_filter('fluentform/validate_input_item_input_email'",
-            self.content,
-            "Must hook into Fluent Forms input email validation filter"
-        )
+            "add_action('wpforms_process_validate_email'",
+            "add_filter('wpcf7_validate_email'",
+            "add_filter('wpcf7_validate_email*'",
+            "add_filter('gform_field_validation'",
+            "add_filter('forminator_custom_form_submit_errors'",
+            "add_filter('ninja_forms_submit_data'",
+            "add_action('woocommerce_checkout_process'",
+            "add_action('woocommerce_register_post'",
+            "add_filter('registration_errors'",
+            "add_filter('world_inspire_verify_email'",
+            "function world_inspire_is_valid_email",
+        ]
+        for hook in hooks:
+            with self.subTest(hook=hook):
+                self.assertIn(hook, self.content, f"Expected hook {hook} must be present in plugin")
+
+    def test_supported_integrations_function(self):
+        self.assertIn("function gm_ff_email_guard_get_supported_integrations()", self.content)
+        for key in ["fluentform", "wpforms", "wpcf7", "gravityforms", "forminator", "ninja_forms", "woocommerce", "wp_register"]:
+            with self.subTest(integration_key=key):
+                self.assertIn(f"'{key}' =>", self.content)
 
     def test_admin_menu_priority_99(self):
         self.assertTrue(
@@ -69,11 +88,12 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
         self.assertIn("=== World Inspire Email Validation for Fluent Forms ===", readme_txt)
         self.assertIn("Contributors: hxsmyxh, vecyang1", readme_txt)
         self.assertIn("Tested up to: 7.1", readme_txt)
-        self.assertIn("Stable tag: 1.1.5", readme_txt)
+        self.assertIn("Stable tag: 1.2.0", readme_txt)
         self.assertIn("== Description ==", readme_txt)
         self.assertIn("== External Services ==", readme_txt)
         self.assertIn("== Installation ==", readme_txt)
         self.assertIn("== Changelog ==", readme_txt)
+        self.assertIn("= 1.2.0 =", readme_txt)
         self.assertIn("= 1.1.5 =", readme_txt)
         self.assertIn("https://github.com/disposable-email-domains/disposable-email-domains/blob/main/LICENSE.txt", readme_txt)
 
@@ -120,6 +140,18 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
         self.assertIn("esc_js(wp_create_nonce('wp_rest'))", self.content)
         self.assertIn("esc_html__('Settings', 'world-inspire-email-validation-for-fluent-forms')", self.content)
         self.assertIn("esc_html__('● ACTIVE', 'world-inspire-email-validation-for-fluent-forms')", self.content)
+
+    def test_e2e_php_mock_execution(self):
+        """Execute full PHP E2E mock suite to test all 6 layers and 8 form integration hooks."""
+        e2e_script = REPO_ROOT / "tests" / "test_mock_e2e.php"
+        self.assertTrue(e2e_script.is_file(), "tests/test_mock_e2e.php must exist")
+        res = subprocess.run(
+            ["php", str(e2e_script)],
+            capture_output=True,
+            text=True
+        )
+        self.assertEqual(res.returncode, 0, f"PHP E2E test failed:\nSTDOUT:\n{res.stdout}\nSTDERR:\n{res.stderr}")
+        self.assertIn("All E2E checks passed perfectly!", res.stdout)
 
 
 if __name__ == "__main__":

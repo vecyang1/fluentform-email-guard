@@ -5,7 +5,7 @@ Tags: fluent-forms, email-validation, anti-spam, bounce-prevention, disposable-e
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.1.5
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,12 @@ This plugin includes an offline bundled dataset of disposable email domains deri
 1. Admin Dashboard with Live Interactive Sandbox and Granular Defense Toggles.
 
 == Changelog ==
+
+= 1.2.0 =
+* Feature: Multi-Form Suite Upgrade — Added native integration support for WPForms, Contact Form 7, Gravity Forms, Forminator, Ninja Forms, WooCommerce (checkout & registration), and WordPress core registration.
+* Feature: Integrations Management Panel — Added dynamic form detection notification bar and granular per-plugin defense switches.
+* Feature: Universal Developer API — Added `world_inspire_verify_email` filter and `world_inspire_is_valid_email()` helper for custom forms and third-party integrations.
+* Performance: Optimized runtime derived integration detection (SSOT) with zero overhead when plugins are inactive.
 
 = 1.1.5 =
 * Compliance: Renamed plugin to "World Inspire Email Validation for Fluent Forms" with distinctive brand prefix and slug "world-inspire-email-validation-for-fluent-forms" per WordPress.org review requirements.
