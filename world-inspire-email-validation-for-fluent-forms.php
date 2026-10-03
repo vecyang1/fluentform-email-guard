@@ -47,11 +47,11 @@ function gm_ff_email_guard_default_config() {
             'external_api' => false,
         ],
         'blocked_domains' => [
-            'blocked.example.com', // nosec: mock
+            'blocked.example.com', // nosec: mock // nosec: mock
             'q2.com'
         ],
         'whitelist_domains' => [
-            'whitelisted.example.com' // nosec: mock
+            'whitelisted.example.com' // nosec: mock // nosec: mock
         ],
         'blocked_roles' => [
             'admin', 'support', 'info', 'sales', 'billing', 'abuse', 'postmaster', 'webmaster'
@@ -894,7 +894,7 @@ function gm_ff_email_guard_render_admin_page() {
                                 <th scope="row"><label for="gm_ff_eg_whitelist_domains">Whitelisted Domains</label></th>
                                 <td>
                                     <textarea name="gm_ff_eg_whitelist_domains" id="gm_ff_eg_whitelist_domains" rows="2" class="large-text code"><?php echo esc_textarea(implode("\n", (array)$config['whitelist_domains'])); ?></textarea>
-                                    <p class="description">Domains that will always bypass checks (e.g. <code>example.com</code>).</p> <?php // nosec: mock ?>
+                                    <p class="description">Domains that will always bypass checks (e.g. <code>example.com</code>).</p> <?php // nosec: mock ?> <?php // nosec: mock ?>
                                 </td>
                             </tr>
                             <tr>
