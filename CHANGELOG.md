@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2026-09-15] - 2026-09-15
 
 ### Fixed
-- **Fleet Migration to Official Directory Slug**: Migrated live estate sites (`example.com`, `acme.example.net`, `belovedpals.example.com`, `hi.cars.example.co.uk`, `demo.example.com`) from interim folder `email-guard-for-fluent-forms` to official WordPress.org package `world-inspire-email-validation-for-fluent-forms` (v1.1.5).
+- **Fleet Migration to Official Directory Slug**: Migrated live production sites from interim folder `email-guard-for-fluent-forms` to official WordPress.org package `world-inspire-email-validation-for-fluent-forms` (v1.1.5).
 - **Ghost Deactivation Notice Resolution**: Removed legacy plugin references and orphan folders causing WordPress core `validate_active_plugins()` deactivation warnings when viewing plugins list.
 - **Auto-Updates**: Enabled WordPress core auto-updates for the canonical directory plugin across the estate.
 

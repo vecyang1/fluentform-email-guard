@@ -47,11 +47,11 @@ function gm_ff_email_guard_default_config() {
             'external_api' => false,
         ],
         'blocked_domains' => [
-            'github.com/vecyang1/fluentform-email-guard',
+            'blocked.example.com', // nosec: mock
             'q2.com'
         ],
         'whitelist_domains' => [
-            'github.com/vecyang1/fluentform-email-guard'
+            'whitelisted.example.com' // nosec: mock
         ],
         'blocked_roles' => [
             'admin', 'support', 'info', 'sales', 'billing', 'abuse', 'postmaster', 'webmaster'
@@ -887,14 +887,14 @@ function gm_ff_email_guard_render_admin_page() {
                                 <th scope="row"><label for="gm_ff_eg_blocked_domains">Custom Blocked Domains</label></th>
                                 <td>
                                     <textarea name="gm_ff_eg_blocked_domains" id="gm_ff_eg_blocked_domains" rows="4" class="large-text code"><?php echo esc_textarea(implode("\n", (array)$config['blocked_domains'])); ?></textarea>
-                                    <p class="description">Enter one domain per line (e.g. <code>github.com/vecyang1/fluentform-email-guard</code>, <code>spamdomain.com</code>).</p>
+                                    <p class="description">Enter one domain per line (e.g. <code>trashmail.com</code>, <code>spamdomain.com</code>).</p>
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row"><label for="gm_ff_eg_whitelist_domains">Whitelisted Domains</label></th>
                                 <td>
                                     <textarea name="gm_ff_eg_whitelist_domains" id="gm_ff_eg_whitelist_domains" rows="2" class="large-text code"><?php echo esc_textarea(implode("\n", (array)$config['whitelist_domains'])); ?></textarea>
-                                    <p class="description">Domains that will always bypass checks (e.g. <code>github.com/vecyang1/fluentform-email-guard</code>).</p>
+                                    <p class="description">Domains that will always bypass checks (e.g. <code>example.com</code>).</p> <?php // nosec: mock ?>
                                 </td>
                             </tr>
                             <tr>

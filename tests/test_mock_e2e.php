@@ -210,11 +210,11 @@ $res_syntax = gm_ff_email_guard_check('invalid-email-address');
 assert_test(!$res_syntax['valid'] && $res_syntax['reason'] === 'syntax_error', "Rejects malformed email syntax");
 
 // 2.4 Custom Blocked Domain
-$res_blocked = gm_ff_email_guard_check('bad@github.com/vecyang1/fluentform-email-guard');
+$res_blocked = gm_ff_email_guard_check('bad@blocked.example.com');
 assert_test(!$res_blocked['valid'] && $res_blocked['reason'] === 'blocked_domain', "Rejects custom blocked domain");
 
 // 2.5 Whitelisted Domain
-$res_whitelist = gm_ff_email_guard_check('vip@github.com/vecyang1/fluentform-email-guard');
+$res_whitelist = gm_ff_email_guard_check('vip@whitelisted.example.com');
 assert_test($res_whitelist['valid'] && $res_whitelist['reason'] === 'whitelisted', "Passes whitelisted domain");
 
 // 2.6 Valid Deliverable Email

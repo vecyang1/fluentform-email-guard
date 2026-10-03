@@ -8,7 +8,7 @@
 - **Primary users**: WordPress estate administrators, marketing leads, growth engineers running Fluent Forms and FluentCRM funnels.
 - **Core jobs**: Prevent invalid submissions, throwaway mailboxes, and typos at form submission time to eliminate hard bounces, protect SMTP domain sender reputation, and maintain CRM hygiene.
 - **Out of scope**: Generic anti-spam CAPTCHA (handled by Turnstile), payment fraud (handled by Stripe/SureCart).
-- **Current phase**: Production v1.1.5 published to WordPress.org (`world-inspire-email-validation-for-fluent-forms`) & deployed across estate (`github.com/vecyang1/fluentform-email-guard`, `acme.example.net`, `belovedpals.example.com`).
+- **Current phase**: Production v1.1.5 published to WordPress.org (`world-inspire-email-validation-for-fluent-forms`) & deployed across production sites.
 - **last_verified**: 2026-09-12
 
 ---
@@ -91,5 +91,4 @@ flowchart TD
 |---|---|---|---|---|---|
 | **WordPress.org SVN** | WordPress.org Plugin Directory | `https://wordpress.org/plugins/world-inspire-email-validation-for-fluent-forms/` | SVN `https://plugins.svn.wordpress.org/world-inspire-email-validation-for-fluent-forms/` | WP.org Plugin API / Revision 3692788 | WordPress.org Directory |
 | **Local dev** | PHP 8.2 / Python 3.11 | `python3 tests/test_email_guard_contract.py` | Local repository | PHP syntax & unittest | `A-coding/26.09.06-fluentform-email-guard` |
-| **GitHub CI/CD** | GitHub Actions | Push to `main` or tag `v*` | `.github/workflows/wporg-deploy.yml`, `ci-release.yml` | Lint + Test + Package + SVN Sync | `vecyang1/fluentform-email-guard` |
-| **Estate WordPress** | WordPress 6.x / PHP 8.2 | `/wp-admin/admin.php?page=fluentform-email-guard` | `fluentform_email_guard_config` | `/wp-json/fluentform-email-guard/v1/status` | `github.com/vecyang1/fluentform-email-guard`, `acme.example.net`, `belovedpals.example.com` |
+| **Estate WordPress** | WordPress 6.x / PHP 8.2 | `/wp-admin/admin.php?page=fluentform-email-guard` | `fluentform_email_guard_config` | `/wp-json/fluentform-email-guard/v1/status` | `site1.example.com`, `site2.example.com`, `site3.example.com` |
