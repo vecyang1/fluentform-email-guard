@@ -98,7 +98,7 @@ GET /wp-json/fluentform-email-guard/v1/status
   "enabled": true,
   "version": "1.1.0",
   "disposable_domains_count": 8742,
-  "blocked_domains": ["trashmail.com", "q2.com"],
+  "blocked_domains": ["trashmail.com", "blocked.example.com"],
   "target_forms": [],
   "checks": {
     "syntax": true,

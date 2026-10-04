@@ -5,6 +5,18 @@ All notable changes to the "Email Guard for Fluent Forms" plugin will be documen
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-10-04
+
+### Changed
+- **Default Blocklist Refinement**: Removed `'q2.com'` from default `blocked_domains` list to prevent false-positive blocks on valid corporate emails.
+- **Automatic Migration**: Added upgrade routine in `gm_ff_email_guard_get_config()` to automatically purge legacy default `'q2.com'` from saved `fluentform_email_guard_config` in `wp_options`.
+- **Version Bump**: Bumped version to 1.2.1.
+
+## [2026-10-04] - 2026-10-04
+
+### Documentation
+- Add .env.example and mark example domain annotations (`1bdb7c3`)
+
 ## [1.2.0] - 2026-09-16
 
 ### Added

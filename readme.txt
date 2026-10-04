@@ -5,7 +5,7 @@ Tags: fluent-forms, email-validation, anti-spam, bounce-prevention, disposable-e
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,10 @@ This plugin includes an offline bundled dataset of disposable email domains deri
 1. Admin Dashboard with Live Interactive Sandbox and Granular Defense Toggles.
 
 == Changelog ==
+
+= 1.2.1 =
+* Fix: Removed default blocked domain q2.com to prevent false-positive blocks on valid corporate emails.
+* Migration: Added automatic upgrade routine to purge legacy default q2.com from saved configuration.
 
 = 1.2.0 =
 * Feature: Multi-Form Suite Upgrade — Added native integration support for WPForms, Contact Form 7, Gravity Forms, Forminator, Ninja Forms, WooCommerce (checkout & registration), and WordPress core registration.

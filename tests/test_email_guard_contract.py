@@ -27,7 +27,7 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
     def test_plugin_headers(self):
         headers = [
             "Plugin Name: World Inspire Email Validation for Fluent Forms",
-            "Version: 1.2.0",
+            "Version: 1.2.1",
             "License: GPL-2.0-or-later",
             "Text Domain: world-inspire-email-validation-for-fluent-forms",
         ]
@@ -88,11 +88,12 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
         self.assertIn("=== World Inspire Email Validation for Fluent Forms ===", readme_txt)
         self.assertIn("Contributors: hxsmyxh, vecyang1", readme_txt)
         self.assertIn("Tested up to: 7.1", readme_txt)
-        self.assertIn("Stable tag: 1.2.0", readme_txt)
+        self.assertIn("Stable tag: 1.2.1", readme_txt)
         self.assertIn("== Description ==", readme_txt)
         self.assertIn("== External Services ==", readme_txt)
         self.assertIn("== Installation ==", readme_txt)
         self.assertIn("== Changelog ==", readme_txt)
+        self.assertIn("= 1.2.1 =", readme_txt)
         self.assertIn("= 1.2.0 =", readme_txt)
         self.assertIn("= 1.1.5 =", readme_txt)
         self.assertIn("https://github.com/disposable-email-domains/disposable-email-domains/blob/main/LICENSE.txt", readme_txt)
@@ -152,6 +153,12 @@ class TestFluentFormEmailGuardContract(unittest.TestCase):
         )
         self.assertEqual(res.returncode, 0, f"PHP E2E test failed:\nSTDOUT:\n{res.stdout}\nSTDERR:\n{res.stderr}")
         self.assertIn("All E2E checks passed perfectly!", res.stdout)
+
+    def test_q2_domain_not_in_default_blocked_domains(self):
+        """Assert q2.com is purged from default blocked domains."""
+        default_config_match = re.search(r"function gm_ff_email_guard_default_config\(\)\s*\{(.*?)\n\}", self.content, re.DOTALL)
+        self.assertTrue(default_config_match, "default config function found")
+        self.assertNotIn("q2.com", default_config_match.group(1))
 
 
 if __name__ == "__main__":

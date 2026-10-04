@@ -3,7 +3,7 @@
  * Plugin Name: World Inspire Email Validation for Fluent Forms
  * Plugin URI: https://github.com/vecyang1/fluentform-email-guard
  * Description: Production-grade multi-layer real-time email defense for Fluent Forms and WordPress forms (WPForms, CF7, Gravity Forms, Forminator, Ninja Forms, WooCommerce, WP Registration). Blocks disposable/temporary domains (8,700+ domains), verifies live DNS MX records with 24h caching, auto-suggests typo corrections (e.g. gamil.com -> gmail.com), and prevents hard bounces.
- * Version: 1.2.0
+ * Version: 1.2.1
  * Author: World Inspire LLC, Vec
  * Author URI: https://github.com/vecyang1/fluentform-email-guard
  * License: GPL-2.0-or-later
@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('GM_FF_EMAIL_GUARD_VERSION', '1.2.0');
+define('GM_FF_EMAIL_GUARD_VERSION', '1.2.1');
 define('GM_FF_EMAIL_GUARD_FILE', __FILE__);
 define('GM_FF_EMAIL_GUARD_BASENAME', plugin_basename(__FILE__));
 define('GM_FF_EMAIL_GUARD_PATH', plugin_dir_path(__FILE__));
@@ -48,7 +48,6 @@ function gm_ff_email_guard_default_config() {
         ],
         'blocked_domains' => [
             'blocked.example.com', // nosec: mock // nosec: mock
-            'q2.com'
         ],
         'whitelist_domains' => [
             'whitelisted.example.com' // nosec: mock // nosec: mock
@@ -92,6 +91,14 @@ function gm_ff_email_guard_get_config() {
         $config = $default;
         update_option('fluentform_email_guard_config', $config);
         return $config;
+    }
+    // Upgrade / migration check: purge legacy default 'q2.com' and sync version
+    if (empty($config['version']) || version_compare($config['version'], '1.2.1', '<')) {
+        if (isset($config['blocked_domains']) && is_array($config['blocked_domains'])) {
+            $config['blocked_domains'] = array_values(array_diff($config['blocked_domains'], ['q2.com']));
+        }
+        $config['version'] = GM_FF_EMAIL_GUARD_VERSION;
+        update_option('fluentform_email_guard_config', $config);
     }
     $merged = wp_parse_args($config, $default);
     if (!isset($merged['integrations']) || !is_array($merged['integrations'])) {
