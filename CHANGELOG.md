@@ -5,6 +5,11 @@ All notable changes to the "Email Guard for Fluent Forms" plugin will be documen
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-10-19] - 2026-10-19
+
+### Maintenance
+- Enforce GitHub Actions quota hygiene (ubuntu-latest default, concurrency, paths-ignore) (`66eb2b4`)
+
 ## [1.2.2] - 2026-10-16
 
 ### Fixed
@@ -85,7 +90,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **Trademark Compliance**: Renamed plugin to `Email Guard for Fluent Forms` to strictly conform with WordPress.org Guideline #17 (avoiding leading third-party trademarks).
 - **Dual-Channel Distribution**: Abstracted GitHub update hooks with `WPORG_RELEASE` and `FLUENTFORM_EMAIL_GUARD_DISABLE_GH_UPDATER` to prevent conflicts with WordPress core updates (Guideline #7, Decision D-007).
-- **Author Alignment**: Updated Author to `World Inspire LLC, Vec` with Author URI `https://github.com/vecyang1/fluentform-email-guard`.
+- **Author Alignment**: Updated Author to `Vec Yang` with Author URI `https://github.com/vecyang1/fluentform-email-guard`.
 
 ### Security
 - Fine-Grained Personal Access Token (FG-PAT) architecture with `Contents: Read-only` isolation.

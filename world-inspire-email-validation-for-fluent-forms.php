@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/vecyang1/fluentform-email-guard
  * Description: Production-grade multi-layer real-time email defense for Fluent Forms and WordPress forms (WPForms, CF7, Gravity Forms, Forminator, Ninja Forms, WooCommerce, WP Registration). Blocks disposable/temporary domains (8,700+ domains), verifies live DNS MX records with 24h caching, auto-suggests typo corrections (e.g. gamil.com -> gmail.com), and prevents hard bounces.
  * Version: 1.2.1
- * Author: World Inspire LLC, Vec
+ * Author: Vec Yang
  * Author URI: https://github.com/vecyang1/fluentform-email-guard
  * License: GPL-2.0-or-later
  * Text Domain: world-inspire-email-validation-for-fluent-forms
@@ -925,7 +925,7 @@ function gm_ff_email_guard_render_admin_page() {
                 <!-- Plugin Information Box -->
                 <div class="card" style="max-width:none;padding:20px;margin-bottom:20px;">
                     <h3>Plugin Information</h3>
-                    <p style="font-size:13px;color:#646970;">Developed by <a href="https://github.com/vecyang1/fluentform-email-guard" target="_blank" rel="noopener">World Inspire LLC</a> for WordPress.org.</p>
+                    <p style="font-size:13px;color:#646970;">Developed by <a href="https://github.com/vecyang1/fluentform-email-guard" target="_blank" rel="noopener">Vec Yang</a> for WordPress.org.</p>
                     <p style="font-size:12px;margin:8px 0 0 0;"><strong>Installed Version:</strong> v<?php echo esc_html(GM_FF_EMAIL_GUARD_VERSION); ?></p>
                     <p style="font-size:12px;margin:4px 0 0 0;"><strong>Updates:</strong> Managed automatically via WordPress Core</p>
                 </div>
@@ -1039,10 +1039,10 @@ function gm_ff_email_guard_render_admin_page() {
 /**
  * REST API Endpoints.
  * Exposes canonical namespace: fluentform-email-guard/v1
- * And backwards-compatible namespace: glintmuse/v1
+ * And backwards-compatible namespace: ff-email-guard/v1
  */
 add_action('rest_api_init', function () {
-    $namespaces = ['fluentform-email-guard/v1', 'glintmuse/v1'];
+    $namespaces = ['fluentform-email-guard/v1', 'ff-email-guard/v1'];
 
     $test_handler = [
         'methods' => 'POST',
